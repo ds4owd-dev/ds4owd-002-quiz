@@ -1,8 +1,8 @@
 ---
-title: "Module 1: Quarto Basics"
+title: "Module 1: Getting Started"
 output: learnr::tutorial
 runtime: shiny_prerendered
-description: "Test your understanding of Quarto basics for openwashdata package documentation"
+description: "Test your understanding of the concepts covered in Module 1" 
 resource_files:
   - github_usernames.csv
   - _github_username.Rmd
@@ -33,7 +33,89 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Introduction
 
-This quiz tests your understanding of Quarto basics for openwashdata package documentation. The quiz covers YAML headers, code chunks, and data analysis integration.
+This weekly quiz is designed to support your learning in the ds4owd course. It will test your understanding of the concepts covered in Module 1, including RStudio IDE, GitHub Personal Access Tokens (PATs), and basic R syntax. A submission of the quiz for each module is required to complete the course. 
+
+## Multiple Choice Questions
+
+### Question 1: GitHub PAT Storage
+
+```{r q1}
+question_radio(
+  "Where should you store your GitHub Personal Access Token (PAT) for secure and convenient use when working in cloud environments like Posit Cloud?",
+  answer("In a text file on your desktop for easy access"),
+  answer("In your R script as a comment for reference"),
+  answer("In a secure password manager or credentials manager", correct = TRUE),
+  answer("In your browser's bookmarks for quick retrieval"),
+  incorrect = "GitHub PATs should be stored securely in a password manager or credentials manager to prevent unauthorized access. Since we'll be working in Posit Cloud, system credential managers aren't available, so external password managers are recommended.",
+  correct = "Correct! Storing PATs in a secure password manager or credentials manager provides security while allowing you to access them when needed in cloud environments where system credential stores aren't available.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 2: RStudio IDE Panes
+
+```{r q2}
+question_checkbox(
+  "Which four panes make up the RStudio IDE? (Select all four)",
+  answer("Source Editor", correct = TRUE),
+  answer("Console", correct = TRUE),
+  answer("Environment/History/Git/Connections", correct = TRUE),
+  answer("Files/Plots/Packages/Help/Viewer", correct = TRUE),
+  answer("Terminal"),
+  answer("Debug"),
+  answer("Version Control"),
+  incorrect = "The RStudio IDE has four main panes. Try again and select exactly four options.",
+  correct = "Excellent! The four panes are: Source Editor (top-left), Console (bottom-left), Environment/History/Connections (top-right), and Files/Plots/Packages/Help/Viewer (bottom-right).",
+  allow_retry = TRUE
+)
+```
+
+### Question 3: R Assignment Operator
+
+```{r q5}
+question_radio(
+  "Which is the assignment operator in R?",
+  answer("="),
+  answer("<-", correct = TRUE),
+  answer("<<-"),
+  answer("->"),
+  incorrect = "The tidyverse style guide recommends using a specific assignment operator for clarity and consistency.",
+  correct = "Correct! The arrow operator '<-' is preferred in R for assignment, as it clearly shows the direction of assignment and avoids confusion with function arguments.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+## Coding Exercises
+
+### Exercise 1: Modifying gapminder data
+
+The code below filters the gapminder dataset for the year 2007 and calculates the mean population by continent. Modify the code to filter for the year 1952 instead.
+
+```{r exercise1, exercise=TRUE}
+gapminder |> 
+  filter(year == 2007) |> 
+  group_by(continent) |>
+  summarise(
+    mean_life_exp = mean(lifeExp)
+  )
+```
+
+```{r exercise1-solution}
+gapminder |> 
+  filter(year == 1952) |> 
+  group_by(continent) |>
+  summarise(
+    mean_life_exp = mean(lifeExp)
+  )
+```
+
+```{r exercise1-check}
+grade_this_code()
+```
+
+## Details
 
 **Important**: Please enter your GitHub username below and click "Submit Quiz" at the end to record your completion.
 
@@ -43,187 +125,8 @@ This quiz tests your understanding of Quarto basics for openwashdata package doc
 ```{r participation, child='_participation.Rmd'}
 ```
 
-## Section 1: Quarto Fundamentals
-
-### Question 1: YAML Header
-
-```{r yaml-question}
-question("Which of the following is the correct YAML header for an openwashdata package README?",
-  answer("`---`\n`output: html_document`\n`---`"),
-  answer("`---`\n`output: github_document`\n`---`", correct = TRUE),
-  answer("`---`\n`format: html`\n`---`"),
-  answer("`---`\n`format: markdown`\n`---`"),
-  allow_retry = TRUE,
-  incorrect = "Think about what output format is typically used for GitHub README files.",
-  correct = "Correct! The github_document output format is used for README files that will be displayed on GitHub."
-)
-```
-
-### Question 2: pkgdown Configuration
-
-```{r pkgdown-question}
-question("What file is used to configure the pkgdown website for an openwashdata package?",
-  answer("pkgdown.yml"),
-  answer("_pkgdown.yml", correct = TRUE),
-  answer("config.yml"),
-  answer("_config.yml"),
-  allow_retry = TRUE,
-  incorrect = "The configuration file starts with an underscore and has a .yml extension.",
-  correct = "Correct! The _pkgdown.yml file is used to configure pkgdown websites."
-)
-```
-
-## Section 2: Code Chunks and Options
-
-### Question 3: Code Chunk Options
-
-```{r chunk-options-question}
-question("Which chunk options would you use to hide both code and messages when loading tidyverse?",
-  answer("`echo = TRUE, message = TRUE`"),
-  answer("`echo = FALSE, message = FALSE`", correct = TRUE),
-  answer("`include = TRUE`"),
-  answer("`eval = FALSE`"),
-  allow_retry = TRUE,
-  incorrect = "In Quarto, you can use `#| echo: false` and `#| message: false` to hide code and messages.",
-  correct = "Correct! Setting echo = FALSE hides the code and message = FALSE hides the messages."
-)
-```
-
-### Question 4: Creating Tables
-
-Use the gapminder dataset to create a summary table showing the average life expectancy by continent in 2007:
-
-```{r create-table-setup}
-library(dplyr)
-library(gapminder)
-library(knitr)
-```
-
-```{r create-table, exercise=TRUE, exercise.lines=10}
-# Create a summary table of average life expectancy by continent for 2007
-# Your code here
-```
-
-```{r create-table-hint-1}
-# Start by filtering for year 2007
-gapminder %>%
-  filter(year == 2007)
-```
-
-```{r create-table-hint-2}
-# Then group by continent and calculate mean
-gapminder %>%
-  filter(year == 2007) %>%
-  group_by(continent) %>%
-  summarise(avg_life_exp = mean(lifeExp))
-```
-
-```{r create-table-solution}
-gapminder %>%
-  filter(year == 2007) %>%
-  group_by(continent) %>%
-  summarise(avg_life_exp = mean(lifeExp)) %>%
-  knitr::kable(digits = 1)
-```
-
-```{r create-table-check}
-grade_this_code()
-```
-
-## Section 3: Data Analysis Integration
-
-### Question 5: Inline Code
-
-Calculate the mean GDP per capita for Switzerland in 2007:
-
-```{r inline-code-setup}
-library(dplyr)
-library(gapminder)
-```
-
-```{r inline-code, exercise=TRUE, exercise.lines=10}
-# Calculate Switzerland's GDP per capita in 2007
-swiss_gdp_2007 <- gapminder %>%
-  filter(country == "Switzerland", year == 2007) %>%
-  pull(gdpPercap)
-
-# Display the result
-paste("Switzerland's GDP per capita in 2007 was $", 
-      format(swiss_gdp_2007, big.mark = ","), sep = "")
-```
-
-```{r inline-code-solution}
-swiss_gdp_2007 <- gapminder %>%
-  filter(country == "Switzerland", year == 2007) %>%
-  pull(gdpPercap)
-
-paste("Switzerland's GDP per capita in 2007 was $", 
-      format(swiss_gdp_2007, big.mark = ","), sep = "")
-```
-
-```{r inline-code-check}
-grade_this_code()
-```
-
-### Question 6: Data Visualization
-
-Create a line plot showing the life expectancy over time for African countries with a population greater than 30 million in 2007:
-
-```{r visualization-setup}
-library(dplyr)
-library(gapminder)
-
-# Identify African countries with population > 30 million in 2007
-large_african_countries <- gapminder %>%
-  filter(continent == "Africa", year == 2007, pop > 30000000) %>%
-  pull(country)
-```
-
-```{r visualization, exercise=TRUE, exercise.lines=15}
-# Create the plot
-# Your code here
-```
-
-```{r visualization-hint-1}
-# Start by filtering for the large African countries
-gapminder %>%
-  filter(country %in% large_african_countries)
-```
-
-```{r visualization-hint-2}
-# Then create a ggplot with appropriate aesthetics
-gapminder %>%
-  filter(country %in% large_african_countries) %>%
-  ggplot(aes(x = year, y = lifeExp, color = country))
-```
-
-```{r visualization-solution}
-gapminder %>%
-  filter(country %in% large_african_countries) %>%
-  ggplot(aes(x = year, y = lifeExp, color = country)) +
-  geom_line() +
-  labs(title = "Life Expectancy Over Time",
-       subtitle = "African countries with population > 30 million in 2007",
-       x = "Year",
-       y = "Life Expectancy (years)",
-       color = "Country") +
-  theme_minimal()
-```
-
-```{r visualization-check}
-grade_this_code()
-```
-
 ```{r submission-section, child='_submission.Rmd'}
 ```
+  
+You've completed the Module 1 quiz! 
 
-## Summary
-
-This quiz covered essential Quarto skills for openwashdata package documentation:
-
-1. **YAML Headers**: Configuring document output formats
-2. **Code Chunks**: Managing code execution and output display
-3. **Data Integration**: Combining narrative text with R analysis
-4. **Visualization**: Creating informative plots within documents
-
-Remember that Quarto documents can be rendered to multiple formats, making them ideal for creating both package documentation and interactive tutorials like this one!
