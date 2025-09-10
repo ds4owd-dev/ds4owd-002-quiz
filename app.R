@@ -60,7 +60,7 @@ quizzes <- generate_quiz_list(quiz_names)
 
 # UI
 ui <- page_navbar(
-  title = "openwashdata Quizzes",
+  title = "ds4owd-002 quiz",
   theme = bs_theme(bootswatch = "cosmo"),
   
   nav_panel(
@@ -69,8 +69,9 @@ ui <- page_navbar(
       class = "container mt-5",
       div(
         class = "text-center mb-5",
-        h1("openwashdata Course Quizzes"),
-        p(class = "lead", "Interactive tutorials to test your knowledge")
+        h1("data science for openwashdata - quiz"),
+        p(class = "lead", "Interactive tutorials to test your knowledge."),
+        p(class = "lead text-warning fw-bold", "For successful completion of the course, you need to complete the quizzes for each module."),
       ),
       
       div(
@@ -118,7 +119,7 @@ ui <- page_navbar(
         div(
           class = "col-md-8",
           h2("About These Quizzes"),
-          p("These interactive quizzes are designed to help you learn and practice concepts from the openwashdata course."),
+          p("These interactive quizzes are designed to help you learn and practice concepts from the ds4owd course. They are required to be completed for each module of the course."),
           
           h3("Features"),
           tags$ul(
@@ -126,7 +127,7 @@ ui <- page_navbar(
             tags$li("Immediate feedback on your answers"),
             tags$li("Hints and solutions available"),
             tags$li("Progress tracking within each quiz"),
-            tags$li("Automatic grading with gradethis")
+            tags$li("Automatic grading")
           ),
           
           h3("How to Use"),
@@ -136,7 +137,8 @@ ui <- page_navbar(
             tags$li("Work through the questions at your own pace"),
             tags$li("Run code in the interactive exercises"),
             tags$li("Use hints if you get stuck"),
-            tags$li("Check your solutions for immediate feedback")
+            tags$li("Check your solutions for immediate feedback"),
+            tags$li("Ensure to submit the Quiz with your GitHub username")
           ),
           
           h3("Technical Requirements"),
