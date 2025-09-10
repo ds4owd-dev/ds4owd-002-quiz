@@ -10,10 +10,10 @@ quiz_names <- c(
 )
 
 # Base URL for deployed quizzes
-base_url <- "https://hjj91u-nicolo-massari.shinyapps.io/"
+base_url <- "https://u4x6xe-lars-sch0bitz.shinyapps.io/"
 
 # Main app configuration
-main_app_name <- "openwashdata-quiz-hub"
+main_app_name <- "ds4owd-002-quiz"
 
 # in modules/_submission.Rmd
 #
