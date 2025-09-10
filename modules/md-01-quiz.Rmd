@@ -9,7 +9,7 @@ resource_files:
   - _participation.Rmd
   - _submission.Rmd
 tutorial:
-  id: "module1-quarto-basics"
+  id: "md-01-quiz"
 ---
 
 ```{r setup, include=FALSE}
