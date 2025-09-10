@@ -91,7 +91,7 @@ question_radio(
 
 ### Exercise 1: Modifying gapminder data
 
-The code below filters the gapminder dataset for the year 2007 and calculates the mean population by continent. Modify the code to filter for the year 1952 instead.
+The code below filters the gapminder dataset for the year 2007 and calculates the mean life expectancy by continent. Modify the code to filter for the year 1952 instead.
 
 ```{r exercise1, exercise=TRUE}
 gapminder |> 
