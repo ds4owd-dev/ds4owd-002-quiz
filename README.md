@@ -2,7 +2,7 @@
 
 This directory contains interactive learnr quizzes for the openwashdata course and a landing page to access them.
 
-**Live Demo**: https://hjj91u-nicolo-massari.shinyapps.io/openwashdata-quiz-hub/
+**Live Demo**: https://https://u4x6xe-lars-sch0bitz.shinyapps.io/ds4owd-002-quiz/
 
 ## Structure
 
