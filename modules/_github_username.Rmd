@@ -7,10 +7,10 @@ tryCatch({
     csv_path <- "modules/github_usernames.csv"
   }
   github_users <- read.csv(csv_path, stringsAsFactors = FALSE)
-  # Create choices with display format: "First Last (username)"
+  # Create choices with display format: "First Name (username)"
   username_choices <- setNames(
-    github_users$GitHub.Username,
-    paste0(github_users$First.Name, " ", github_users$Last.Name, " (", github_users$GitHub.Username, ")")
+    github_users$github_username,
+    paste0(github_users$first_name, " (", github_users$github_username, ")")
   )
 }, error = function(e) {
   # Fallback if CSV not found
@@ -51,10 +51,10 @@ username_choices <- reactive({
       csv_path <- "modules/github_usernames.csv"
     }
     github_users <- read.csv(csv_path, stringsAsFactors = FALSE)
-    # Create choices with display format: "First Last (username)"
+    # Create choices with display format: "First Name (username)"
     setNames(
-      github_users$GitHub.Username,
-      paste0(github_users$First.Name, " ", github_users$Last.Name, " (", github_users$GitHub.Username, ")")
+      github_users$github_username,
+      paste0(github_users$first_name, " (", github_users$github_username, ")")
     )
   }, error = function(e) {
     # Fallback if CSV not found
