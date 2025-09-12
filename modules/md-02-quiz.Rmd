@@ -22,6 +22,11 @@ library(knitr)
 library(gradethis)
 library(learnrhash)
 library(httr)
+library(sf)
+library(rnaturalearth)
+library(readr)
+library(here)
+library(tidyr)
 
 # Enable exercise checking
 tutorial_options(
@@ -38,6 +43,15 @@ gapminder_summary_continent_year <- gapminder |>
     lifeExp = mean(lifeExp),
     .groups = "drop"
   )
+
+# Load world map data and course participant data for Question 8
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Load participant data
+participant_data <- read_csv(
+  here::here("data", "ds4owd-002-country-residence-count.csv"),
+  show_col_types = FALSE
+)
 ```
 
 ## Introduction
@@ -238,6 +252,60 @@ grade_this({
   # If both geoms are present
   pass("Excellent! You've successfully created a timeseries plot showing life expectancy trends by continent over time.")
 })
+```
+
+### Question 8: Highlight Your Country on a Map
+
+In this exercise, you'll create a world map that highlights your country of residence. The code below creates a map showing where ds4owd course participants are located.
+
+**Instructions:**
+1. Find your country's ISO3 code (e.g., "CHE" for Switzerland, "KEN" for Kenya, "USA" for United States)
+2. Replace "CHE" in the code with your country's ISO3 code
+3. Run the code to see your country highlighted on the map
+
+```{r q8-setup}
+# Load world map data
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Load participant data
+participant_data <- read_csv(
+  here::here("data", "ds4owd-002-country-residence-count.csv"),
+  show_col_types = FALSE
+)
+
+# Join the data
+world_participants <- world |>
+  left_join(participant_data, by = c("iso_a3" = "country_residence")) |>
+  mutate(
+    n = replace_na(n, 0)
+  )
+```
+
+```{r q8-exercise, exercise=TRUE, exercise.setup="q8-setup", exercise.lines=20}
+# Change "CHE" to your country's ISO3 code
+my_country <- "CHE"
+
+# Create the map with your country highlighted
+ggplot(data = world_participants) +
+  geom_sf(aes(fill = ifelse(iso_a3 == my_country, "My Country", 
+                            ifelse(n > 0, "Other Participants", "No Participants"))),
+          color = "white", size = 0.1) +
+  scale_fill_manual(
+    values = c("My Country" = "#e63946", 
+               "Other Participants" = "#457b9d", 
+               "No Participants" = "#f1faee"),
+    name = "Legend"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  labs(
+    title = paste("ds4owd Course Participants with", my_country, "Highlighted"),
+    caption = "Data source: ds4owd course registrations"
+  )
 ```
 
 ```{r child="_github_username.Rmd"}
