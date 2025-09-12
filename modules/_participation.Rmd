@@ -2,6 +2,7 @@
 question("Have you participated in the live module, did you watch the recording, or are you only completing the quiz?",
   answer("Live module", correct = TRUE),
   answer("Recording", correct = TRUE),
+  answer("Both, live & recording", correct = TRUE),
   answer("Neither", correct = TRUE),
   random_answer_order = FALSE,
   type = "single"
