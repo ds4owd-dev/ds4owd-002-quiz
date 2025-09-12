@@ -28,6 +28,7 @@ library(readr)
 library(here)
 library(tidyr)
 library(countrycode)
+library(plotly)
 
 # Enable exercise checking
 tutorial_options(
@@ -325,33 +326,43 @@ participant_data <- read_csv(
   show_col_types = FALSE
 )
 
-# Join the data
+# Join the data and add hover text
 world_participants <- world |>
   left_join(participant_data, by = c("iso_a3" = "iso3")) |>
   mutate(
-    n = replace_na(n, 0)
+    n = replace_na(n, 0),
+    hover_text = paste0(
+      name_long, ": ", n, " participant", ifelse(n == 1, "", "s")
+    )
   )
 ```
 
 ```{r q8c-exercise, exercise=TRUE, exercise.setup="q8c-setup"}
-# Create a world map showing participant counts
-ggplot(data = world_participants) +
-  geom_sf(aes(fill = n), color = "white", size = 0.1) +
+# Create an interactive world map showing participant counts
+p <- ggplot(data = world_participants) +
+  geom_sf(aes(fill = n, text = hover_text), color = "white", size = 0.1) +
   scale_fill_gradient(
     low = "#f0f0f0",
     high = "#2c3e50",
-    name = "Number of\nParticipants",
+    name = "Participants",
     breaks = c(0, 5, 10, 15, 20, 25)
   ) +
   theme_minimal() +
   theme(
     legend.position = "right",
     axis.text = element_blank(),
-    axis.ticks = element_blank()
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
   ) +
   labs(
-    title = "ds4owd Course Participants by Country",
-    caption = "Data source: ds4owd course registrations"
+    title = "ds4owd Course Participants by Country"
+  )
+
+# Convert to interactive map with plotly
+ggplotly(p, tooltip = "text") |>
+  layout(
+    title = list(text = "ds4owd Course Participants by Country (hover for details)"),
+    hoverlabel = list(bgcolor = "white", font = list(size = 12))
   )
 ```
 
