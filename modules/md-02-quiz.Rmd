@@ -27,6 +27,7 @@ library(rnaturalearth)
 library(readr)
 library(here)
 library(tidyr)
+library(countrycode)
 
 # Enable exercise checking
 tutorial_options(
@@ -52,6 +53,13 @@ participant_data <- read_csv(
   here::here("data", "ds4owd-002-country-residence-count.csv"),
   show_col_types = FALSE
 )
+
+# Join the data (for initial setup)
+world_participants <- world |>
+  left_join(participant_data, by = c("iso_a3" = "iso3")) |>
+  mutate(
+    n = replace_na(n, 0)
+  )
 ```
 
 ## Introduction
@@ -254,20 +262,79 @@ grade_this({
 })
 ```
 
-### Question 8: Highlight Your Country on a Map
+### Question 8: Analyze Course Participant Distribution
 
-In this exercise, you'll create a world map that highlights your country of residence. The code below creates a map showing where ds4owd course participants are located.
+Let's explore where ds4owd course participants are located around the world.
 
-**Instructions:**
-1. Find your country's ISO3 code (e.g., "CHE" for Switzerland, "KEN" for Kenya, "USA" for United States)
-2. Replace "CHE" in the code with your country's ISO3 code
-3. Run the code to see your country highlighted on the map
+#### Part A: View Participant Counts by Country
 
-```{r q8-setup}
+First, let's look at the participant data sorted by the number of participants:
+
+```{r q8a-setup}
+# Load participant data
+participant_data <- read_csv(
+  here::here("data", "ds4owd-002-country-residence-count.csv"),
+  show_col_types = FALSE
+)
+
+# Add continent information using countrycode package
+residence <- participant_data |>
+  mutate(
+    continent = countrycode(iso3, "iso3c", "continent")
+  ) |>
+  arrange(desc(n))
+```
+
+```{r q8a-display, exercise=TRUE, exercise.setup="q8a-setup"}
+# Display the participant data sorted by count (n)
+residence |>
+  select(name, continent, n) 
+```
+
+#### Part B: Group Participants by Continent
+
+Now, complete the code below to calculate the total number of participants per continent. Fill in the blank with the correct column name to group by:
+
+```{r q8b-exercise, exercise=TRUE, exercise.setup="q8a-setup"}
+# Fill in the blank: group by which column?
+residence |>
+  group_by(________) |>
+  summarise(
+    total_participants = sum(n),
+    number_of_countries = n_distinct(iso3)
+  ) |>
+  arrange(desc(total_participants))
+```
+
+```{r q8b-solution}
+residence |>
+  group_by(continent) |>
+  summarise(
+    total_participants = sum(n),
+    number_of_countries = n_distinct(iso3)
+  ) |>
+  arrange(desc(total_participants))
+```
+
+```{r q8b-check}
+grade_this({
+  if (!grepl("group_by\\s*\\(\\s*continent\\s*\\)", .user_code)) {
+    fail("You should group by 'continent' to aggregate the data by continental regions.")
+  }
+  
+  pass("Excellent! You've successfully grouped the participants by continent.")
+})
+```
+
+#### Part C: Visualize on a World Map
+
+Finally, create a world map showing the actual participant counts. Modify the code to highlight your country:
+
+```{r q8c-setup}
 # Load world map data
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
-# Load participant data
+# Load and prepare participant data
 participant_data <- read_csv(
   here::here("data", "ds4owd-002-country-residence-count.csv"),
   show_col_types = FALSE
@@ -275,26 +342,43 @@ participant_data <- read_csv(
 
 # Join the data
 world_participants <- world |>
-  left_join(participant_data, by = c("iso_a3" = "country_residence")) |>
+  left_join(participant_data, by = c("iso_a3" = "iso3")) |>
   mutate(
-    n = replace_na(n, 0)
+    n = replace_na(n, 0),
+    participant_category = case_when(
+      n >= 10 ~ "10+ participants",
+      n >= 5 ~ "5-9 participants", 
+      n >= 1 ~ "1-4 participants",
+      TRUE ~ "No participants"
+    )
   )
 ```
 
-```{r q8-exercise, exercise=TRUE, exercise.setup="q8-setup", exercise.lines=20}
+```{r q8c-exercise, exercise=TRUE, exercise.setup="q8c-setup", exercise.lines=30}
 # Change "CHE" to your country's ISO3 code
 my_country <- "CHE"
 
-# Create the map with your country highlighted
-ggplot(data = world_participants) +
-  geom_sf(aes(fill = ifelse(iso_a3 == my_country, "My Country", 
-                            ifelse(n > 0, "Other Participants", "No Participants"))),
+# Add a column for the fill categories including highlighting
+world_participants_plot <- world_participants |>
+  mutate(
+    fill_category = ifelse(iso_a3 == my_country, 
+                           "My Country",
+                           participant_category)
+  )
+
+# Create the map showing participant distribution
+ggplot(data = world_participants_plot) +
+  geom_sf(aes(fill = fill_category),
           color = "white", size = 0.1) +
   scale_fill_manual(
-    values = c("My Country" = "#e63946", 
-               "Other Participants" = "#457b9d", 
-               "No Participants" = "#f1faee"),
-    name = "Legend"
+    values = c(
+      "My Country" = "#e74c3c",
+      "10+ participants" = "#2c3e50",
+      "5-9 participants" = "#3498db",
+      "1-4 participants" = "#85c1e2",
+      "No participants" = "#f8f9fa"
+    ),
+    name = "Participants"
   ) +
   theme_minimal() +
   theme(
@@ -303,7 +387,8 @@ ggplot(data = world_participants) +
     axis.ticks = element_blank()
   ) +
   labs(
-    title = paste("ds4owd Course Participants with", my_country, "Highlighted"),
+    title = "ds4owd Course Participants Worldwide",
+    subtitle = paste("Your country:", my_country),
     caption = "Data source: ds4owd course registrations"
   )
 ```
