@@ -238,6 +238,12 @@ ggplot(data = gapminder_summary_continent_year,
                      color = continent))
 ```
 
+```{r q7-hint}
+# Add these two lines to your code:
+# + geom_line()
+# + geom_point()
+```
+
 ```{r q7-solution}
 ggplot(data = gapminder_summary_continent_year,
        mapping = aes(x = year,
@@ -245,21 +251,6 @@ ggplot(data = gapminder_summary_continent_year,
                      color = continent)) +
   geom_line() +
   geom_point()
-```
-
-```{r q7-check}
-grade_this({
-  # Check if the student code contains the required geoms
-  if (!grepl("geom_line\\(\\)", .user_code)) {
-    fail("Your code should include geom_line() to create the lines.")
-  }
-  if (!grepl("geom_point\\(\\)", .user_code)) {
-    fail("Your code should include geom_point() to add points to the lines.")
-  }
-  
-  # If both geoms are present
-  pass("Excellent! You've successfully created a timeseries plot showing life expectancy trends by continent over time.")
-})
 ```
 
 ### Question 8: Analyze Course Participant Distribution
@@ -306,6 +297,10 @@ residence |>
   arrange(desc(total_participants))
 ```
 
+```{r q8b-hint}
+# Group by the 'continent' column to aggregate data by continental regions
+```
+
 ```{r q8b-solution}
 residence |>
   group_by(continent) |>
@@ -316,19 +311,9 @@ residence |>
   arrange(desc(total_participants))
 ```
 
-```{r q8b-check}
-grade_this({
-  if (!grepl("group_by\\s*\\(\\s*continent\\s*\\)", .user_code)) {
-    fail("You should group by 'continent' to aggregate the data by continental regions.")
-  }
-  
-  pass("Excellent! You've successfully grouped the participants by continent.")
-})
-```
-
 #### Part C: Visualize on a World Map
 
-Finally, create a world map showing the actual participant counts. Modify the code to highlight your country:
+Finally, let's visualize the participant data on a world map:
 
 ```{r q8c-setup}
 # Load world map data
@@ -344,51 +329,28 @@ participant_data <- read_csv(
 world_participants <- world |>
   left_join(participant_data, by = c("iso_a3" = "iso3")) |>
   mutate(
-    n = replace_na(n, 0),
-    participant_category = case_when(
-      n >= 10 ~ "10+ participants",
-      n >= 5 ~ "5-9 participants", 
-      n >= 1 ~ "1-4 participants",
-      TRUE ~ "No participants"
-    )
+    n = replace_na(n, 0)
   )
 ```
 
-```{r q8c-exercise, exercise=TRUE, exercise.setup="q8c-setup", exercise.lines=30}
-# Change "CHE" to your country's ISO3 code
-my_country <- "CHE"
-
-# Add a column for the fill categories including highlighting
-world_participants_plot <- world_participants |>
-  mutate(
-    fill_category = ifelse(iso_a3 == my_country, 
-                           "My Country",
-                           participant_category)
-  )
-
-# Create the map showing participant distribution
-ggplot(data = world_participants_plot) +
-  geom_sf(aes(fill = fill_category),
-          color = "white", size = 0.1) +
-  scale_fill_manual(
-    values = c(
-      "My Country" = "#e74c3c",
-      "10+ participants" = "#2c3e50",
-      "5-9 participants" = "#3498db",
-      "1-4 participants" = "#85c1e2",
-      "No participants" = "#f8f9fa"
-    ),
-    name = "Participants"
+```{r q8c-exercise, exercise=TRUE, exercise.setup="q8c-setup"}
+# Create a world map showing participant counts
+ggplot(data = world_participants) +
+  geom_sf(aes(fill = n), color = "white", size = 0.1) +
+  scale_fill_gradient(
+    low = "#f0f0f0",
+    high = "#2c3e50",
+    name = "Number of\nParticipants",
+    breaks = c(0, 5, 10, 15, 20, 25)
   ) +
   theme_minimal() +
   theme(
-    legend.position = "bottom",
+    legend.position = "right",
     axis.text = element_blank(),
     axis.ticks = element_blank()
   ) +
   labs(
-    title = "ds4owd Course Participants Worldwide",
-    subtitle = paste("Your country:", my_country),
+    title = "ds4owd Course Participants by Country",
     caption = "Data source: ds4owd course registrations"
   )
 ```
