@@ -1,0 +1,250 @@
+---
+title: "Module 2: Data Visualization"
+output: learnr::tutorial
+runtime: shiny_prerendered
+description: "Test your understanding of data visualization concepts covered in Module 2" 
+resource_files:
+  - github_usernames.csv
+  - _github_username.Rmd
+  - _participation.Rmd
+  - _submission.Rmd
+tutorial:
+  id: "md-02-quiz"
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(dplyr)
+library(ggplot2)
+library(gapminder)
+library(palmerpenguins)
+library(knitr)
+library(gradethis)
+library(learnrhash)
+library(httr)
+
+# Enable exercise checking
+tutorial_options(
+  exercise.eval = FALSE,
+  exercise.checker = gradethis::grade_learnr
+)
+
+knitr::opts_chunk$set(echo = FALSE)
+
+# Prepare data for Question 7
+gapminder_summary_continent_year <- gapminder |>
+  group_by(continent, year) |>
+  summarise(
+    lifeExp = mean(lifeExp),
+    .groups = "drop"
+  )
+```
+
+## Introduction
+
+This weekly quiz is designed to support your learning in the ds4owd course. It will test your understanding of the concepts covered in Module 2, including data visualization with ggplot2, boxplots, histograms, and different types of variables.
+
+## Multiple Choice Questions
+
+### Poll 1: Boxplot - Thick Line
+
+```{r boxplot-display-1, echo=FALSE, fig.width=7, fig.asp=0.618}
+ggplot(data = gapminder,
+       mapping = aes(x = continent,
+                     y = lifeExp)) +
+  geom_boxplot() +
+  theme_minimal(base_size = 14)
+```
+
+```{r poll1}
+question_radio(
+  "What does the thick line inside the box of a boxplot represent?",
+  answer("The mean of the observations"),
+  answer("The middle of the box"),
+  answer("The median of the observations", correct = TRUE),
+  answer("None of the above"),
+  incorrect = "Think about which measure of central tendency is typically shown in a boxplot.",
+  correct = "Correct! The thick line inside the box represents the median, which divides the data into two equal halves.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Poll 2: Boxplot - Interquartile Range
+
+```{r boxplot-display-2, echo=FALSE, fig.width=7, fig.asp=0.618}
+ggplot(data = gapminder,
+       mapping = aes(x = continent,
+                     y = lifeExp)) +
+  geom_boxplot() +
+  theme_minimal(base_size = 14)
+```
+
+```{r poll2}
+question_radio(
+  "What percentage of observations are contained inside the box of a boxplot (interquartile range)?",
+  answer("25%"),
+  answer("Depends on the median"),
+  answer("50%", correct = TRUE),
+  answer("None of the above"),
+  incorrect = "The box represents the interquartile range (IQR), which contains the middle portion of the data.",
+  correct = "Correct! The box contains 50% of the observations - from the 25th percentile (Q1) to the 75th percentile (Q3).",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Poll 3: Median Definition
+
+```{r poll3}
+question_radio(
+  "What is the median of a set of observations?",
+  answer("The median is the most frequently occurring value in a dataset."),
+  answer("The median is the sum of all values in a dataset divided by the number of observations."),
+  answer("The median is the point above and below which half (50%) of the observations falls.", correct = TRUE),
+  answer("The median is the square root of the sum of the squares of each value in a dataset."),
+  incorrect = "The median is a measure of central tendency that divides the data.",
+  correct = "Correct! The median is the middle value that divides the data into two equal halves.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 4: Histogram Definition
+
+```{r q4}
+question_radio(
+  "What is a histogram?",
+  answer("A plot that displays the relationship between two continuous variables using points"),
+  answer("A graphical representation of the distribution of numerical data using bars to show frequency of values in intervals", correct = TRUE),
+  answer("A plot that shows the median, quartiles, and outliers of a dataset"),
+  answer("A circular chart divided into sectors showing proportions of categories"),
+  incorrect = "A histogram is specifically designed to show the distribution of a single numerical variable.",
+  correct = "Correct! A histogram uses bars to show how frequently values fall within specified intervals (bins) for numerical data.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 5a: Variable Types - Discrete
+
+```{r q5a}
+question_checkbox(
+  "Which of the following are examples of discrete numerical variables? (Select all that apply)",
+  answer("Number of students in a classroom", correct = TRUE),
+  answer("Height of a person"),
+  answer("Roll of a dice", correct = TRUE),
+  answer("Temperature in degrees Celsius"),
+  answer("Number of cars in a parking lot", correct = TRUE),
+  answer("Weight of a package"),
+  incorrect = "Discrete variables are countable and typically represent whole numbers. Continuous variables can take any value within a range.",
+  correct = "Correct! Discrete variables represent countable quantities that are typically whole numbers.",
+  allow_retry = TRUE
+)
+```
+
+### Question 5b: Variable Types - Continuous
+
+```{r q5b}
+question_checkbox(
+  "Which of the following are examples of continuous numerical variables? (Select all that apply)",
+  answer("Number of pages in a book"),
+  answer("Length of a room", correct = TRUE),
+  answer("Time taken to complete a task", correct = TRUE),
+  answer("Number of siblings"),
+  answer("Body weight", correct = TRUE),
+  answer("Shoe size"),
+  incorrect = "Continuous variables can take any value within a range, including decimals. Discrete variables are countable.",
+  correct = "Correct! Continuous variables can take any value within a range and include measurements like length, weight, and time.",
+  allow_retry = TRUE
+)
+```
+
+## Coding Exercises
+
+### Question 6: Understanding Barplots
+
+Run the code below to create a barplot showing the count of penguins by species:
+
+```{r q6-setup}
+# Ensure penguins data is available
+data(penguins, package = "palmerpenguins")
+```
+
+```{r q6-exercise, exercise=TRUE, exercise.setup="q6-setup"}
+ggplot(data = penguins,
+       mapping = aes(x = species)) +
+  geom_bar()
+```
+
+```{r q6-question}
+question_radio(
+  "Why don't we need to supply a y-axis mapping when using geom_bar()?",
+  answer("The y-axis defaults to zero for all bars"),
+  answer("geom_bar() automatically counts the number of observations for each x value", correct = TRUE),
+  answer("The y-axis is randomly generated"),
+  answer("geom_bar() uses the row numbers as y values"),
+  incorrect = "Think about what statistical transformation geom_bar() performs on the data.",
+  correct = "Correct! geom_bar() performs a statistical transformation (stat_count) that automatically counts the number of observations for each category on the x-axis.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 7: Create a Timeseries Plot
+
+Complete the code below to create a timeseries plot showing life expectancy by continent over time. You need to:
+
+1. Add the correct geom functions to create both lines and points
+2. The aesthetic mappings are already provided
+
+```{r q7-setup}
+# Prepare the summarized data
+gapminder_summary_continent_year <- gapminder |>
+  group_by(continent, year) |>
+  summarise(
+    lifeExp = mean(lifeExp),
+    .groups = "drop"
+  )
+```
+
+```{r q7-exercise, exercise=TRUE, exercise.setup="q7-setup"}
+# Complete this code by adding geom_line() and geom_point()
+ggplot(data = gapminder_summary_continent_year,
+       mapping = aes(x = year,
+                     y = lifeExp,
+                     color = continent))
+```
+
+```{r q7-solution}
+ggplot(data = gapminder_summary_continent_year,
+       mapping = aes(x = year,
+                     y = lifeExp,
+                     color = continent)) +
+  geom_line() +
+  geom_point()
+```
+
+```{r q7-check}
+grade_this({
+  # Check if the student code contains the required geoms
+  if (!grepl("geom_line\\(\\)", .user_code)) {
+    fail("Your code should include geom_line() to create the lines.")
+  }
+  if (!grepl("geom_point\\(\\)", .user_code)) {
+    fail("Your code should include geom_point() to add points to the lines.")
+  }
+  
+  # If both geoms are present
+  pass("Excellent! You've successfully created a timeseries plot showing life expectancy trends by continent over time.")
+})
+```
+
+```{r child="_github_username.Rmd"}
+```
+
+```{r child="_participation.Rmd"}
+```
+
+```{r child="_submission.Rmd"}
+```
