@@ -239,12 +239,6 @@ ggplot(data = gapminder_summary_continent_year,
                      color = continent))
 ```
 
-```{r q7-hint}
-# Add these two lines to your code:
-# + geom_line()
-# + geom_point()
-```
-
 ```{r q7-solution}
 ggplot(data = gapminder_summary_continent_year,
        mapping = aes(x = year,
@@ -252,6 +246,13 @@ ggplot(data = gapminder_summary_continent_year,
                      color = continent)) +
   geom_line() +
   geom_point()
+```
+
+```{r q7-code-check}
+grade_this_code(
+  correct = "Excellent! You've successfully created a timeseries plot showing life expectancy trends by continent over time.",
+  incorrect = "Not quite. {code_feedback()} Remember to add both geom_line() and geom_point() to create the lines and points."
+)
 ```
 
 ### Question 8: Analyze Course Participant Distribution
@@ -298,10 +299,6 @@ residence |>
   arrange(desc(total_participants))
 ```
 
-```{r q8b-hint}
-# Group by the 'continent' column to aggregate data by continental regions
-```
-
 ```{r q8b-solution}
 residence |>
   group_by(continent) |>
@@ -310,6 +307,13 @@ residence |>
     number_of_countries = n_distinct(iso3)
   ) |>
   arrange(desc(total_participants))
+```
+
+```{r q8b-code-check}
+grade_this_code(
+  correct = "Perfect! You've successfully grouped the participants by continent to see the distribution across different regions.",
+  incorrect = "Not quite. {code_feedback()} You should group by 'continent' to aggregate the data by continental regions."
+)
 ```
 
 #### Part C: Visualize on a World Map
