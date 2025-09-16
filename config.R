@@ -4,8 +4,8 @@
 # List of quiz modules to deploy and display
 quiz_names <- c(
   "md-01-quiz"
+  # "md-02-quiz"
   # Add new quizzes here:
-  # "md-02-quiz",
   # "md-03-quiz"
 )
 
