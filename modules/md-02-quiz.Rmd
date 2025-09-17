@@ -372,6 +372,10 @@ ggplotly(p, tooltip = "text") |>
   )
 ```
 
+## Details
+
+**Important**: Please enter your GitHub username below and click "Submit Quiz" at the end to record your completion.
+
 ```{r child="_github_username.Rmd"}
 ```
 
@@ -380,3 +384,5 @@ ggplotly(p, tooltip = "text") |>
 
 ```{r child="_submission.Rmd"}
 ```
+
+You've completed the Module 1 quiz! 
