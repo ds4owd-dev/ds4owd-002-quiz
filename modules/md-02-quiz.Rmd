@@ -318,7 +318,9 @@ grade_this_code(
 
 #### Part C: Visualize on a World Map
 
-Finally, let's visualize the participant data on a world map:
+You can also prepare maps with `ggplot2`. It's beyond the scope of the class to teach you the foundations of spatial data in R, but a popular package to work with spatial data is the `sf` (Simple Features) R Package. The `rnaturalearth` R Package facilitates world mapping by making [Natural Earth](https://www.naturalearthdata.com/) map data more easily available to R users.
+
+Let's visualize the participant data on a world map:
 
 ```{r q8c-setup}
 # Load world map data
