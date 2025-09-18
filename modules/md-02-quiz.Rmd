@@ -385,4 +385,4 @@ ggplotly(p, tooltip = "text") |>
 ```{r child="_submission.Rmd"}
 ```
 
-You've completed the Module 1 quiz! 
+You've completed the quiz! 
