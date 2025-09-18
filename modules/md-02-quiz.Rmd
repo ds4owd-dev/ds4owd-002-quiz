@@ -36,7 +36,7 @@ tutorial_options(
   exercise.checker = gradethis::grade_learnr
 )
 
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 
 # Prepare data for Question 7
 gapminder_summary_continent_year <- gapminder |>
@@ -194,7 +194,7 @@ Run the code below to create a barplot showing the count of penguins by species:
 data(penguins, package = "palmerpenguins")
 ```
 
-```{r q6-exercise, exercise=TRUE, exercise.setup="q6-setup"}
+```{r q6-exercise, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q6-setup"}
 ggplot(data = penguins,
        mapping = aes(x = species)) +
   geom_bar()
@@ -231,7 +231,7 @@ gapminder_summary_continent_year <- gapminder |>
   )
 ```
 
-```{r q7-exercise, exercise=TRUE, exercise.setup="q7-setup"}
+```{r q7-exercise, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q7-setup"}
 # Complete this code by adding geom_line() and geom_point()
 ggplot(data = gapminder_summary_continent_year,
        mapping = aes(x = year,
@@ -239,7 +239,7 @@ ggplot(data = gapminder_summary_continent_year,
                      color = continent))
 ```
 
-```{r q7-solution}
+```{r q7-solution, include=FALSE}
 ggplot(data = gapminder_summary_continent_year,
        mapping = aes(x = year,
                      y = lifeExp,
@@ -248,7 +248,7 @@ ggplot(data = gapminder_summary_continent_year,
   geom_point()
 ```
 
-```{r q7-code-check}
+```{r q7-code-check, include=FALSE}
 grade_this_code(
   correct = "Excellent! You've successfully created a timeseries plot showing life expectancy trends by continent over time.",
   incorrect = "Not quite. {code_feedback()} Remember to add both geom_line() and geom_point() to create the lines and points."
@@ -278,17 +278,17 @@ residence <- participant_data |>
   arrange(desc(n))
 ```
 
-```{r q8a-display, exercise=TRUE, exercise.setup="q8a-setup"}
+```{r q8a-display, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q8a-setup"}
 # Display the participant data sorted by count (n)
 residence |>
-  select(name, continent, n) 
+  select(name, continent, n)
 ```
 
 #### Part B: Group Participants by Continent
 
 Now, complete the code below to calculate the total number of participants per continent. Fill in the blank with the correct column name to group by:
 
-```{r q8b-exercise, exercise=TRUE, exercise.setup="q8a-setup"}
+```{r q8b-exercise, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q8a-setup"}
 # Fill in the blank: group by which column?
 residence |>
   group_by(________) |>
@@ -299,7 +299,7 @@ residence |>
   arrange(desc(total_participants))
 ```
 
-```{r q8b-solution}
+```{r q8b-solution, include=FALSE}
 residence |>
   group_by(continent) |>
   summarise(
@@ -309,7 +309,7 @@ residence |>
   arrange(desc(total_participants))
 ```
 
-```{r q8b-code-check}
+```{r q8b-code-check, include=FALSE}
 grade_this_code(
   correct = "Perfect! You've successfully grouped the participants by continent to see the distribution across different regions.",
   incorrect = "Not quite. {code_feedback()} You should group by 'continent' to aggregate the data by continental regions."
@@ -343,7 +343,7 @@ world_participants <- world |>
   )
 ```
 
-```{r q8c-exercise, exercise=TRUE, exercise.setup="q8c-setup"}
+```{r q8c-exercise, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q8c-setup"}
 # Create an interactive world map showing participant counts
 p <- ggplot(data = world_participants) +
   geom_sf(aes(fill = n, text = hover_text), color = "white", size = 0.1) +
