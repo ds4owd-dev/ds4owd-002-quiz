@@ -49,9 +49,9 @@ gapminder_summary_continent_year <- gapminder |>
 # Load world map data and course participant data for Question 8
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
-# Load participant data
+# Load and prepare participant data
 participant_data <- read_csv(
-  here::here("data", "ds4owd-002-country-residence-count.csv"),
+  "data/ds4owd-002-country-residence-count.csv",
   show_col_types = FALSE
 )
 
@@ -264,9 +264,9 @@ Let's explore where ds4owd course participants are located around the world.
 First, let's look at the participant data sorted by the number of participants:
 
 ```{r q8a-setup}
-# Load participant data
+# Load and prepare participant data
 participant_data <- read_csv(
-  here::here("data", "ds4owd-002-country-residence-count.csv"),
+  "data/ds4owd-002-country-residence-count.csv",
   show_col_types = FALSE
 )
 
@@ -328,7 +328,7 @@ world <- ne_countries(scale = "medium", returnclass = "sf")
 
 # Load and prepare participant data
 participant_data <- read_csv(
-  here::here("data", "ds4owd-002-country-residence-count.csv"),
+  "data/ds4owd-002-country-residence-count.csv",
   show_col_types = FALSE
 )
 

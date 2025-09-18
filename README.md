@@ -200,7 +200,8 @@ This will:
 
 ```r
 # Test a quiz locally
-rmarkdown::run("modules/md-01-quiz.Rmd")
+setwd("modules")
+rmarkdown::run("md-01-quiz.Rmd")
 ```
 
 ### Test Landing Page
