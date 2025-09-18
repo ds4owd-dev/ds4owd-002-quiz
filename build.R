@@ -4,23 +4,32 @@ source("config.R")
 # HELPER
 
 deploy_quiz <- function(module_name) {
-  module_path <- paste0(file.path("modules", module_name), ".Rmd")
-
+  # Create temporary deployment directory
+  temp_dir <- paste0("temp_", module_name)
+  dir.create(temp_dir, showWarnings = FALSE)
+  
+  # Copy only the files this quiz needs
   quiz_files <- c(
-    module_path,
+    paste0("modules/", module_name, ".Rmd"),
     "modules/_github_username.Rmd",
-    "modules/_participation.Rmd",
+    "modules/_participation.Rmd", 
     "modules/_submission.Rmd",
     "modules/github_usernames.csv"
   )
-
+  
+  # Copy files to temp directory
+  file.copy(quiz_files, temp_dir, overwrite = TRUE)
+  
+  # Deploy from temp directory
   rsconnect::deployDoc(
-    doc = module_path,
+    doc = file.path(temp_dir, paste0(module_name, ".Rmd")),
     appName = module_name,
-    appFiles = quiz_files,
     forceUpdate = TRUE,
     logLevel = "verbose"
   )
+  
+  # Clean up temp directory
+  unlink(temp_dir, recursive = TRUE)
 }
 
 
