@@ -24,7 +24,15 @@ Imports:
     shiny,
     bslib,
     rsconnect,
-    yaml
+    yaml,
+    countrycode,
+    ggplot2,
+    here,
+    palmerpenguins,
+    plotly,
+    readr,
+    rnaturalearth,
+    sf
 Suggests:
     pkgdown
 Remotes:
