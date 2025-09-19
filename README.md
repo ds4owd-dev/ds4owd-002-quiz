@@ -215,7 +215,7 @@ This will:
 
 ```r
 # Test a quiz locally
-setwd("modules")
+setwd("modules/md-01-quiz")
 rmarkdown::run("md-01-quiz.Rmd")
 ```
 
