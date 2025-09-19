@@ -4,13 +4,22 @@ source("config.R")
 # HELPER
 
 deploy_quiz <- function(module_name) {
-  module_path <- paste0(file.path("modules", module_name), ".Rmd")
+  # Deploy directly from module directory - no temp directories!
+  module_dir <- file.path("modules", module_name)
+  rmd_file <- file.path(module_dir, paste0(module_name, ".Rmd"))
+
+  if (!file.exists(rmd_file)) {
+    stop("Quiz file not found: ", rmd_file)
+  }
+
+  # Deploy directly from module directory
   rsconnect::deployDoc(
-    doc = module_path,
+    doc = rmd_file,
     appName = module_name,
     forceUpdate = TRUE,
     logLevel = "verbose"
   )
+  rsconnect::showLogs()
 }
 
 

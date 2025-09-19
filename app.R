@@ -9,7 +9,7 @@ source("config.R")
 
 # Function to extract quiz metadata from Rmd files
 extract_quiz_metadata <- function(quiz_name) {
-  rmd_path <- file.path("modules", paste0(quiz_name, ".Rmd"))
+  rmd_path <- file.path("modules", quiz_name, paste0(quiz_name, ".Rmd"))
   
   if (!file.exists(rmd_path)) {
     return(NULL)

@@ -24,11 +24,25 @@ library(learnrhash)
 library(httr)
 library(sf)
 library(rnaturalearth)
+# Try to load rnaturalearthdata with fallback
+tryCatch({
+  library(rnaturalearthdata)
+}, error = function(e) {
+  # If rnaturalearthdata isn't available, install it or use fallback
+  tryCatch({
+    if (!requireNamespace("remotes", quietly = TRUE)) {
+      install.packages("remotes")
+    }
+    remotes::install_github("ropensci/rnaturalearthdata")
+    library(rnaturalearthdata)
+  }, error = function(e2) {
+    warning("rnaturalearthdata not available, some functionality may be limited")
+  })
+})
 library(readr)
 library(here)
 library(tidyr)
 library(countrycode)
-library(plotly)
 
 # Enable exercise checking
 tutorial_options(
@@ -47,11 +61,23 @@ gapminder_summary_continent_year <- gapminder |>
   )
 
 # Load world map data and course participant data for Question 8
-world <- ne_countries(scale = "medium", returnclass = "sf")
+# Use error handling in case rnaturalearthdata is not available
+world <- tryCatch({
+  ne_countries(scale = "medium", returnclass = "sf")
+}, error = function(e) {
+  # Fallback: try downloading the data
+  tryCatch({
+    ne_download(scale = "medium", type = "countries", category = "cultural", returnclass = "sf")
+  }, error = function(e2) {
+    # Last resort: create a simple placeholder
+    warning("Unable to load world map data, using placeholder")
+    data.frame(iso_a3 = character(0), name_long = character(0))
+  })
+})
 
-# Load participant data
+# Load and prepare participant data
 participant_data <- read_csv(
-  here::here("data", "ds4owd-002-country-residence-count.csv"),
+  "data/ds4owd-002-country-residence-count.csv",
   show_col_types = FALSE
 )
 
@@ -264,9 +290,9 @@ Let's explore where ds4owd course participants are located around the world.
 First, let's look at the participant data sorted by the number of participants:
 
 ```{r q8a-setup}
-# Load participant data
+# Load and prepare participant data
 participant_data <- read_csv(
-  here::here("data", "ds4owd-002-country-residence-count.csv"),
+  "data/ds4owd-002-country-residence-count.csv",
   show_col_types = FALSE
 )
 
@@ -320,15 +346,14 @@ grade_this_code(
 
 You can also prepare maps with `ggplot2`. It's beyond the scope of the class to teach you the foundations of spatial data in R, but a popular package to work with spatial data is the `sf` (Simple Features) R Package. The `rnaturalearth` R Package facilitates world mapping by making [Natural Earth](https://www.naturalearthdata.com/) map data more easily available to R users.
 
-Let's visualize the participant data on a world map:
+Let's visualize the participant data on a world map (**it may be slow, give it a minute**):
 
 ```{r q8c-setup}
-# Load world map data
-world <- ne_countries(scale = "medium", returnclass = "sf")
+# world map data already loaded
 
 # Load and prepare participant data
 participant_data <- read_csv(
-  here::here("data", "ds4owd-002-country-residence-count.csv"),
+  "data/ds4owd-002-country-residence-count.csv",
   show_col_types = FALSE
 )
 
@@ -344,9 +369,9 @@ world_participants <- world |>
 ```
 
 ```{r q8c-exercise, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q8c-setup"}
-# Create an interactive world map showing participant counts
-p <- ggplot(data = world_participants) +
-  geom_sf(aes(fill = n, text = hover_text), color = "white", size = 0.1) +
+# Create a world map showing participant counts
+ggplot(data = world_participants) +
+  geom_sf(aes(fill = n), color = "white", size = 0.1) +
   scale_fill_gradient(
     low = "#f0f0f0",
     high = "#2c3e50",
@@ -363,13 +388,6 @@ p <- ggplot(data = world_participants) +
   labs(
     title = "ds4owd Course Participants by Country"
   )
-
-# Convert to interactive map with plotly
-ggplotly(p, tooltip = "text") |>
-  layout(
-    title = list(text = "ds4owd Course Participants by Country (hover for details)"),
-    hoverlabel = list(bgcolor = "white", font = list(size = 12))
-  )
 ```
 
 ## Details
@@ -385,4 +403,4 @@ ggplotly(p, tooltip = "text") |>
 ```{r child="_submission.Rmd"}
 ```
 
-You've completed the Module 1 quiz! 
+You've completed the quiz!
