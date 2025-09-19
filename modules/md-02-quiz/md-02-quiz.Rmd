@@ -370,9 +370,9 @@ world_participants <- world |>
 ```
 
 ```{r q8c-exercise, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q8c-setup"}
-# Create an interactive world map showing participant counts
-p <- ggplot(data = world_participants) +
-  geom_sf(aes(fill = n, text = hover_text), color = "white", size = 0.1) +
+# Create a world map showing participant counts
+ggplot(data = world_participants) +
+  geom_sf(aes(fill = n), color = "white", size = 0.1) +
   scale_fill_gradient(
     low = "#f0f0f0",
     high = "#2c3e50",
@@ -388,13 +388,6 @@ p <- ggplot(data = world_participants) +
   ) +
   labs(
     title = "ds4owd Course Participants by Country"
-  )
-
-# Convert to interactive map with plotly
-ggplotly(p, tooltip = "text") |>
-  layout(
-    title = list(text = "ds4owd Course Participants by Country (hover for details)"),
-    hoverlabel = list(bgcolor = "white", font = list(size = 12))
   )
 ```
 
