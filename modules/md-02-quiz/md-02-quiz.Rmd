@@ -24,6 +24,21 @@ library(learnrhash)
 library(httr)
 library(sf)
 library(rnaturalearth)
+# Try to load rnaturalearthdata with fallback
+tryCatch({
+  library(rnaturalearthdata)
+}, error = function(e) {
+  # If rnaturalearthdata isn't available, install it or use fallback
+  tryCatch({
+    if (!requireNamespace("remotes", quietly = TRUE)) {
+      install.packages("remotes")
+    }
+    remotes::install_github("ropensci/rnaturalearthdata")
+    library(rnaturalearthdata)
+  }, error = function(e2) {
+    warning("rnaturalearthdata not available, some functionality may be limited")
+  })
+})
 library(readr)
 library(here)
 library(tidyr)
@@ -47,7 +62,19 @@ gapminder_summary_continent_year <- gapminder |>
   )
 
 # Load world map data and course participant data for Question 8
-world <- ne_countries(scale = "medium", returnclass = "sf")
+# Use error handling in case rnaturalearthdata is not available
+world <- tryCatch({
+  ne_countries(scale = "medium", returnclass = "sf")
+}, error = function(e) {
+  # Fallback: try downloading the data
+  tryCatch({
+    ne_download(scale = "medium", type = "countries", category = "cultural", returnclass = "sf")
+  }, error = function(e2) {
+    # Last resort: create a simple placeholder
+    warning("Unable to load world map data, using placeholder")
+    data.frame(iso_a3 = character(0), name_long = character(0))
+  })
+})
 
 # Load and prepare participant data
 participant_data <- read_csv(
@@ -323,8 +350,19 @@ You can also prepare maps with `ggplot2`. It's beyond the scope of the class to 
 Let's visualize the participant data on a world map:
 
 ```{r q8c-setup}
-# Load world map data
-world <- ne_countries(scale = "medium", returnclass = "sf")
+# Load world map data with error handling
+world <- tryCatch({
+  ne_countries(scale = "medium", returnclass = "sf")
+}, error = function(e) {
+  # Fallback: try downloading the data
+  tryCatch({
+    ne_download(scale = "medium", type = "countries", category = "cultural", returnclass = "sf")
+  }, error = function(e2) {
+    # Last resort: create a simple placeholder
+    warning("Unable to load world map data, using placeholder")
+    data.frame(iso_a3 = character(0), name_long = character(0))
+  })
+})
 
 # Load and prepare participant data
 participant_data <- read_csv(
@@ -385,4 +423,4 @@ ggplotly(p, tooltip = "text") |>
 ```{r child="_submission.Rmd"}
 ```
 
-You've completed the quiz! 
+You've completed the quiz!
