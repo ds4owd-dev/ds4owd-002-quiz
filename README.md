@@ -9,12 +9,16 @@ This directory contains interactive learnr quizzes for the openwashdata course a
 - `app.R` - Quiz landing page that automatically displays all configured quizzes
 - `build.R` - Deployment script with helper functions for automated deployment
 - `config.R` - Shared configuration file defining all available quizzes
-- `modules/` - Directory containing all quiz files
-  - `md-01-quiz.Rmd` - Module 1 quiz on Quarto basics (learnr tutorial)
-  - `_github_username.Rmd` - Reusable component for GitHub username input with CSV data
-  - `_submission.Rmd` - Reusable component for quiz submission
-  - `github_usernames.csv` - Student GitHub username database
-  - Additional quiz files can be added as `md-XX-quiz.Rmd`
+- `modules/` - Directory containing individual quiz directories
+  - `md-01-quiz/` - Module 1 quiz directory with all required files
+  - `md-02-quiz/` - Module 2 quiz directory with all required files
+  - Each quiz directory contains:
+    - `md-XX-quiz.Rmd` - Main quiz file (learnr tutorial)
+    - `_github_username.Rmd` - Reusable component for GitHub username input
+    - `_participation.Rmd` - Reusable component for participation tracking
+    - `_submission.Rmd` - Reusable component for quiz submission
+    - `github_usernames.csv` - Student GitHub username database
+    - `data/` - Quiz-specific data files (if needed)
 
 ## Required Packages
 
@@ -145,25 +149,35 @@ source("build.R")
 ```
 
 The deployment system features:
-- **Automatic file bundling**: CSV files and dependencies are automatically included
+- **Direct module deployment**: Deploys directly from module directories (no temp files)
+- **Self-contained modules**: Each quiz directory contains all required files
 - **Streamlined process**: One script deploys everything configured in `config.R`
 
 ## Adding New Quizzes
 
-The system now uses automatic configuration - adding a new quiz is simple:
+The system uses a modular directory structure - adding a new quiz requires creating a complete directory:
 
-### 1. Create the Quiz File
+### 1. Create the Quiz Directory
 
-Create `modules/md-02-quiz.Rmd` with the standardized YAML header:
+Create a new directory `modules/md-XX-quiz/` and add all required files:
+
+```bash
+mkdir modules/md-03-quiz
+cp modules/md-01-quiz/_*.Rmd modules/md-01-quiz/github_usernames.csv modules/md-03-quiz/
+```
+
+### 2. Create the Quiz File
+
+Create `modules/md-XX-quiz/md-XX-quiz.Rmd` with the standardized YAML header:
 
 ```yaml
 ---
-title: "Module 2: Your Title"
+title: "Module 3: Your Title"
 output: learnr::tutorial
 runtime: shiny_prerendered
 description: "Your quiz description"
 tutorial:
-  id: "module2-your-id"
+  id: "md-03-quiz"
 ---
 ```
 
@@ -171,18 +185,19 @@ Add your quiz content following the existing pattern, including:
 - GitHub username collection: `{r github-username, child='_github_username.Rmd'}`
 - Quiz submission: `{r submission-section, child='_submission.Rmd'}`
 
-### 2. Update Configuration
+### 3. Update Configuration
 
 Edit `config.R` to include your new quiz:
 
 ```r
 quiz_names <- c(
   "md-01-quiz",
-  "md-02-quiz"  # Add new quiz here
+  "md-02-quiz",
+  "md-03-quiz"  # Add new quiz here
 )
 ```
 
-### 3. Deploy
+### 4. Deploy
 
 Run the build script to deploy everything:
 
