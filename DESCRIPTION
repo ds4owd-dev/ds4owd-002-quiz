@@ -30,7 +30,6 @@ Imports:
     ggplot2,
     here,
     palmerpenguins,
-    plotly,
     readr,
     rnaturalearth,
     rnaturalearthdata,
