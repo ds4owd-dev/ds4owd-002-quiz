@@ -32,9 +32,11 @@ Imports:
     plotly,
     readr,
     rnaturalearth,
+    rnaturalearthdata,
     sf
 Suggests:
     pkgdown
 Remotes:
     rstudio/gradethis,
-    rundel/learnrhash
+    rundel/learnrhash,
+    ropensci/rnaturalearthdata
