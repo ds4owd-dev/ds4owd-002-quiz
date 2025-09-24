@@ -1,81 +1,169 @@
-```{r, context="server"}
-# Google Form setup
+```{r setup-submission, context="server"}
+# Google Form configuration
 form_url <- "https://docs.google.com/forms/d/e/1FAIpQLScnw9R8wMU5SfFqNVXGeEkiIygLTB_Dc6jWBmbwEeHuekBDzg/formResponse"
-
-# Entry ID mappings
 learnrhash_entry_id <- "entry.1315905314"
 github_username_entry_id <- "entry.61564704"
 tutorial_id_entry_id <- "entry.1169139257"
-```
 
-## Quiz Submission
-
-Please click the button below to submit your quiz results:
-
-```{r submission, echo=FALSE}
-actionButton("submit", "Submit Quiz", class = "btn-primary btn-lg")
-
-# Submission status
-textOutput("submission_status")
-```
-
-```{r, context="server"}
-# Handle quiz submission
-observeEvent(input$submit, {
-  
+# Submission helper function
+submit_quiz <- function(session) {
   # Get GitHub username
-  github_username <- input$github_username
-  
+  github_username <- session$input$github_username
+
   if (is.null(github_username) || github_username == "") {
-    output$submission_status <- renderText({
-      "Please enter your GitHub username before submitting."
-    })
-    return()
+    return(list(
+      success = FALSE,
+      message = "Please enter your GitHub username before submitting.",
+      type = "warning"
+    ))
   }
-  
-  # Generate learnrhash
+
   tryCatch({
-    # Get tutorial state and generate hash
+    # Generate submission data
     state <- learnr::get_tutorial_state()
     learnrhash_submission <- learnrhash::encode_obj(state)
-    
-    # Get tutorial info
     tutorial_info <- learnr::get_tutorial_info()
     tutorial_id <- ifelse(is.null(tutorial_info$tutorial_id), "unknown", tutorial_info$tutorial_id)
 
-    
-    # Prepare form data for Google Form with separate fields
+    # Submit to Google Form
     form_data <- list()
     form_data[[learnrhash_entry_id]] <- learnrhash_submission
     form_data[[github_username_entry_id]] <- github_username
     form_data[[tutorial_id_entry_id]] <- tutorial_id
-    
-    # Submit to Google Form
+
     response <- httr::POST(form_url, body = form_data, encode = "form")
-    
-    # Check response
+
     if (httr::status_code(response) %in% c(200, 302)) {
-      output$submission_status <- renderText({
-        paste("Quiz submitted successfully at", Sys.time(), 
-              "\nModule:", tutorial_id,
-              "\nYour submission hash:", learnrhash_submission)
-      })
+      return(list(
+        success = TRUE,
+        message = paste(
+          "✅ SUCCESS! Your quiz has been submitted!",
+          "\n\nWhat happens next:",
+          "• Your instructor has received your answers",
+          "• Your submission was recorded at:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+          "• Module completed:", tutorial_id,
+          "\n\nBackup reference code:", learnrhash_submission,
+          sep = "\n"
+        ),
+        type = "success",
+        hash = learnrhash_submission
+      ))
     } else {
-      output$submission_status <- renderText({
-        paste("Submission may have failed. Please save this hash and contact your instructor:", 
-              learnrhash_submission)
-      })
+      return(list(
+        success = FALSE,
+        message = paste(
+          "⚠️ Submission Issue",
+          "There may have been a problem submitting your quiz.",
+          "Please save this backup code and contact your instructor:",
+          learnrhash_submission,
+          sep = "\n"
+        ),
+        type = "error",
+        hash = learnrhash_submission
+      ))
     }
-    
   }, error = function(e) {
-    # Fallback: show hash to student
     state <- learnr::get_tutorial_state()
     fallback_hash <- digest::digest(state, algo = "sha256")
-    
-    output$submission_status <- renderText({
-      paste("Error submitting quiz. Please save this hash and contact your instructor:", 
-            fallback_hash)
-    })
+    return(list(
+      success = FALSE,
+      message = paste(
+        "⚠️ Technical Error",
+        "There was a technical problem submitting your quiz.",
+        "Please save this backup code and contact your instructor:",
+        fallback_hash,
+        sep = "\n"
+      ),
+      type = "error",
+      hash = fallback_hash
+    ))
   })
+}
+```
+
+## Quiz Submission
+
+Make sure you have completed all questions above, then confirm your submission:
+
+
+```{r submission-ui, echo=FALSE}
+actionButton("submit", "Submit Quiz", class = "btn-primary btn-lg")
+br()
+br()
+uiOutput("submission_status")
+```
+
+```{r submission-handler, context="server"}
+observeEvent(input$submit, {
+  # Get GitHub username from selectizeInput
+  github_username <- input$github_username
+
+  if (is.null(github_username) || github_username == "") {
+    shiny::showNotification("❌ Please enter your GitHub username first before submitting.", type = "error", duration = NULL)
+    output$submission_status <- renderUI({
+      div(class = "alert alert-warning", style = "margin-top: 15px;",
+          "❌ Please enter your GitHub username first before submitting.")
+    })
+    return()
+  }
+
+  # Submit the quiz
+  result <- tryCatch({
+    # Google Form configuration
+    form_url <- "https://docs.google.com/forms/d/e/1FAIpQLScnw9R8wMU5SfFqNVXGeEkiIygLTB_Dc6jWBmbwEeHuekBDzg/formResponse"
+    learnrhash_entry_id <- "entry.1315905314"
+    github_username_entry_id <- "entry.61564704"
+    tutorial_id_entry_id <- "entry.1169139257"
+
+    # Generate submission data
+    state <- learnr::get_tutorial_state()
+    learnrhash_submission <- learnrhash::encode_obj(state)
+    tutorial_info <- learnr::get_tutorial_info()
+    tutorial_id <- ifelse(is.null(tutorial_info$tutorial_id), "unknown", tutorial_info$tutorial_id)
+
+    # Submit to Google Form
+    form_data <- list()
+    form_data[[learnrhash_entry_id]] <- learnrhash_submission
+    form_data[[github_username_entry_id]] <- github_username
+    form_data[[tutorial_id_entry_id]] <- tutorial_id
+
+    response <- httr::POST(form_url, body = form_data, encode = "form")
+
+    if (httr::status_code(response) %in% c(200, 302)) {
+      list(success = TRUE, message = "SUCCESS! Your quiz has been submitted!", hash = learnrhash_submission)
+    } else {
+      list(success = FALSE, message = "Submission Issue - Please contact your instructor.", hash = learnrhash_submission)
+    }
+  }, error = function(e) {
+    state <- learnr::get_tutorial_state()
+    fallback_hash <- digest::digest(state, algo = "sha256")
+    list(success = FALSE, message = "Technical Error - Please contact your instructor.", hash = fallback_hash)
+  })
+
+  # Show results
+  if (result$success) {
+    shiny::showNotification("🎉 Quiz submitted successfully!", type = "message", duration = NULL)
+    output$submission_status <- renderUI({
+      div(class = "alert alert-success", style = "margin-top: 15px;",
+          h4("🎉 SUCCESS! Your quiz has been submitted!"),
+          p("GitHub username:", github_username),
+          p("Submitted at:", format(Sys.time(), "%Y-%m-%d %H:%M:%S")),
+          br(),
+          p(strong("Backup reference code:")),
+          p(style = "font-family: monospace; font-size: 0.8em; word-break: break-all; background-color: #f5f5f5; padding: 10px;", result$hash)
+      )
+    })
+  } else {
+    shiny::showNotification("❌ Submission failed", type = "error", duration = NULL)
+    output$submission_status <- renderUI({
+      div(class = "alert alert-danger", style = "margin-top: 15px;",
+          h4("❌ Submission Issue"),
+          p(result$message),
+          br(),
+          p(strong("Backup reference code:")),
+          p(style = "font-family: monospace; font-size: 0.8em; word-break: break-all; background-color: #f5f5f5; padding: 10px;", result$hash)
+      )
+    })
+  }
 })
 ```

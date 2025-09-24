@@ -1,0 +1,277 @@
+---
+title: "Module 3: Data Transformation with dplyr"
+output: learnr::tutorial
+runtime: shiny_prerendered
+description: "Test your understanding of data transformation with dplyr and Git version control concepts covered in Module 3"
+resource_files:
+  - github_usernames.csv
+  - _github_username.Rmd
+  - _participation.Rmd
+  - _submission.Rmd
+tutorial:
+  id: "md-03-quiz"
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(knitr)
+library(gradethis)
+library(learnrhash)
+
+# Enable exercise checking
+tutorial_options(
+  exercise.eval = FALSE,
+  exercise.checker = gradethis::grade_learnr
+)
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+# Load sanitation data for exercises
+sanitation <- read_csv("data/jmp_wld_sanitation_long.csv", show_col_types = FALSE)
+
+# Create a subset for some exercises
+sanitation_2020 <- sanitation |>
+  filter(year == 2020, residence == "national")
+```
+
+## Introduction
+
+This weekly quiz is designed to support your learning in the ds4owd course. It will test your understanding of the concepts covered in Module 3, including data transformation with dplyr and Git version control concepts.
+
+## Multiple Choice Questions
+
+### Question 1: Pipe Operator Syntax
+
+```{r q1}
+question_radio(
+  "Which of the following correctly uses the pipe operator (|>) in R?",
+  answer("data |> filter(x > 5)", correct = TRUE),
+  answer("filter(x > 5) |> data"),
+  answer("data => filter(x > 5)"),
+  answer("data |> filter(x > 5) |>"),
+  incorrect = "Remember that the pipe operator passes the left-hand side as the first argument to the right-hand side function.",
+  correct = "Correct! The pipe operator |> takes the output from the left and passes it as the first argument to the function on the right. Note: |> is also a valid pipe operator in R 4.1+",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 2: filter() Logical Operators
+
+```{r q2}
+question_radio(
+  "Which filter() statement will select rows where species is Adelie AND bill_length is greater than 40?",
+  answer("filter(species == 'Adelie' & bill_length > 40)", correct = TRUE),
+  answer("filter(species = 'Adelie' | bill_length > 40)"),
+  answer("filter(species == 'Adelie' | bill_length > 40)"),
+  answer("filter(species = 'Adelie' & bill_length > 40)"),
+  incorrect = "Check your logical operators: & means AND, | means OR, and == tests equality (not =)",
+  correct = "Correct! Use == for equality testing and & for AND conditions in filter().",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 3: Git Workflow Direction
+
+The following diagram shows the Git workflow between local and remote repositories:
+
+![Git Workflow](../images/md-03/git-workflow.png)
+
+```{r q3}
+question_radio(
+  "Based on the Git workflow diagram, which statement is correct about the 'clone' operation?",
+  answer("Clone copies a repository from GitHub (remote) to your Posit Cloud environment (local)", correct = TRUE),
+  answer("Clone copies a repository from your Posit Cloud environment (local) to GitHub (remote)"),
+  answer("Clone creates a new branch in your repository"),
+  answer("Clone is the same as commit"),
+  incorrect = "Look at the arrow direction in the diagram. Clone brings a remote repository to your local environment.",
+  correct = "Correct! Clone creates a local copy of a remote repository. In our course, the local environment is Posit Cloud (not RStudio as shown in the image).",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 4: Commit vs Push
+
+```{r q4}
+question_radio(
+  "What is the key difference between 'git commit' and 'git push'?",
+  answer("Commit saves changes locally; push syncs local commits to the remote repository", correct = TRUE),
+  answer("Commit uploads files to GitHub; push downloads files from GitHub"),
+  answer("There is no difference, they do the same thing"),
+  answer("Push saves changes locally; commit syncs to the remote repository"),
+  incorrect = "Think about where each operation saves the changes - locally or remotely.",
+  correct = "Correct! Commits are saved in your local repository (Posit Cloud), while push uploads those commits to the remote repository (GitHub).",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 5: group_by() Behavior
+
+```{r q5}
+question_radio(
+  "What happens to the data structure after applying group_by() to a data frame?",
+  answer("The data frame becomes grouped, affecting subsequent operations like summarise()", correct = TRUE),
+  answer("The rows are immediately aggregated and reduced"),
+  answer("The data frame is split into separate data frames"),
+  answer("The columns specified in group_by() are removed from the data"),
+  incorrect = "group_by() doesn't immediately change the data, but it changes how subsequent functions operate on it.",
+  correct = "Correct! group_by() creates a grouped data frame where subsequent operations (like summarise() or mutate()) are applied within each group.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+## Coding Exercises
+
+### Question 6: Using filter()
+
+Use the sanitation dataset to filter for observations that meet specific criteria.
+
+Complete the code to filter the sanitation data for:
+
+- Year 2020
+- Residence type "urban"
+- Region "Sub-Saharan Africa"
+
+```{r q6-exercise, exercise=TRUE, exercise.eval=FALSE}
+# Complete the filter statement
+sanitation_filtered <- sanitation |>
+  filter(year == ____,
+         residence == "____",
+         region_sdg == "____")
+
+# Display first few rows
+head(sanitation_filtered)
+```
+
+```{r q6-solution, include=FALSE}
+sanitation_filtered <- sanitation |>
+  filter(year == 2020,
+         residence == "urban",
+         region_sdg == "Sub-Saharan Africa")
+
+# Display first few rows
+head(sanitation_filtered)
+```
+
+### Question 7: Using mutate()
+
+Create new columns in the sanitation dataset using mutate().
+
+Add a new column called `percent_decimal` that converts the `percent` column from percentage (0-100) to decimal (0-1):
+
+```{r q7-exercise, exercise=TRUE, exercise.eval=FALSE}
+# Add a new column that converts percent to decimal
+sanitation_2020 |>
+  mutate(percent_decimal = ____) |>
+  select(name, varname_short, percent, percent_decimal) |>
+  head()
+```
+
+```{r q7-solution, include=FALSE}
+sanitation_2020 |>
+  mutate(percent_decimal = percent / 100) |>
+  select(name, varname_short, percent, percent_decimal) |>
+  head()
+```
+
+### Question 8: Using group_by() and summarise()
+
+Calculate summary statistics for each SDG region.
+
+Complete the code to calculate the mean and standard deviation of the percent values for each region:
+
+```{r q8-setup}
+sanitation_2020 <- sanitation |>
+  filter(year == 2020, residence == "national")
+```
+
+```{r q8-exercise, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q8-setup"}
+# Calculate mean and sd for each region
+sanitation_2020 |>
+  filter(varname_short == "san_bas") |>
+  group_by(____) |>
+  summarise(
+    mean_percent = ____(percent, na.rm = TRUE),
+    sd_percent = ____(percent, na.rm = TRUE),
+    n_countries = n()
+  )
+```
+
+```{r q8-solution, include=FALSE}
+sanitation_2020 |>
+  filter(varname_short == "san_bas") |>
+  group_by(region_sdg) |>
+  summarise(
+    mean_percent = mean(percent, na.rm = TRUE),
+    sd_percent = sd(percent, na.rm = TRUE),
+    n_countries = n()
+  )
+```
+
+### Question 9: Using count()
+
+Use the count() function to explore the sanitation dataset.
+
+Count the number of observations for each combination of year and residence type:
+
+```{r q9-exercise, exercise=TRUE, exercise.eval=FALSE}
+# Count observations by year and residence
+sanitation |>
+  count(____, ____, name = "n_obs") |>
+  arrange(desc(n_obs))
+```
+
+```{r q9-solution, include=FALSE}
+sanitation |>
+  count(year, residence, name = "n_obs") |>
+  arrange(desc(n_obs))
+```
+
+### Question 10: Complex dplyr Chain
+
+Combine multiple dplyr functions to answer a specific question.
+
+Find the top 5 countries with the highest "safely managed sanitation" (san_sm) in 2020 for urban areas:
+
+```{r q10-exercise, exercise=TRUE, exercise.eval=FALSE}
+# Find top 5 countries with highest urban safely managed sanitation in 2020
+sanitation |>
+  filter(year == ____,
+         residence == "____",
+         varname_short == "____") |>
+  arrange(____) |>
+  select(name, percent) |>
+  head(____)
+```
+
+```{r q10-solution, include=FALSE}
+sanitation |>
+  filter(year == 2020,
+         residence == "urban",
+         varname_short == "san_sm") |>
+  arrange(desc(percent)) |>
+  select(name, percent) |>
+  head(5)
+```
+
+## Details
+
+**Important**: Please enter your GitHub username below and click "Submit Quiz" at the end to record your completion.
+
+```{r child="_github_username.Rmd"}
+```
+
+## Submission
+
+```{r child="_participation.Rmd"}
+```
+
+```{r child="_submission.Rmd"}
+```

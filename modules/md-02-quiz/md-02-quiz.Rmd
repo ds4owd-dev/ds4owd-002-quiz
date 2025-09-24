@@ -402,5 +402,3 @@ ggplot(data = world_participants) +
 
 ```{r child="_submission.Rmd"}
 ```
-
-You've completed the quiz!
