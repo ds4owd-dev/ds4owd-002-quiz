@@ -214,9 +214,11 @@ This will:
 ### Test Individual Quizzes
 
 ```r
-# Test a quiz locally
-setwd("modules/md-01-quiz")
-rmarkdown::run("md-01-quiz.Rmd")
+source("local_build.R")
+
+# Run a specific quiz interactively
+run_quiz("md-01-quiz")
+run_quiz("md-02-quiz")
 ```
 
 ### Test Landing Page
