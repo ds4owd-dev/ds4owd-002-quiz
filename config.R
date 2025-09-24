@@ -5,8 +5,8 @@
 quiz_names <- c(
   "md-01-quiz",
   "md-02-quiz"
+  #"md-03-quiz"
   # Add new quizzes here:
-  # "md-03-quiz"
 )
 
 # Base URL for deployed quizzes
