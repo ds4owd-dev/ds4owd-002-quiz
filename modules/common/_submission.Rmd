@@ -15,21 +15,33 @@ Please click the button below to submit your quiz results:
 ```{r submission, echo=FALSE}
 actionButton("submit", "Submit Quiz", class = "btn-primary btn-lg")
 
-# Submission status
-textOutput("submission_status")
+# Add some spacing
+br()
+br()
+
+# Submission status with enhanced styling
+uiOutput("submission_status")
 ```
 
 ```{r, context="server"}
 # Handle quiz submission
 observeEvent(input$submit, {
-  
+
+  # Disable submit button to prevent multiple submissions
+  updateActionButton(session, "submit", label = "Submitting...",
+                     icon = icon("spinner", class = "fa-spin"))
+
   # Get GitHub username
   github_username <- input$github_username
-  
+
   if (is.null(github_username) || github_username == "") {
-    output$submission_status <- renderText({
-      "Please enter your GitHub username before submitting."
+    output$submission_status <- renderUI({
+      div(class = "alert alert-warning", style = "margin-top: 15px;",
+          icon("exclamation-triangle"), " ",
+          strong("Please enter your GitHub username before submitting."))
     })
+    # Re-enable button
+    updateActionButton(session, "submit", label = "Submit Quiz", icon = NULL)
     return()
   }
   
@@ -55,27 +67,56 @@ observeEvent(input$submit, {
     
     # Check response
     if (httr::status_code(response) %in% c(200, 302)) {
-      output$submission_status <- renderText({
-        paste("Quiz submitted successfully at", Sys.time(), 
-              "\nModule:", tutorial_id,
-              "\nYour submission hash:", learnrhash_submission)
+      output$submission_status <- renderUI({
+        div(class = "alert alert-success", style = "margin-top: 15px;",
+            icon("check-circle"), " ",
+            h4(strong("✅ SUCCESS! Your quiz has been submitted!")),
+            hr(),
+            p(strong("What happens next:")),
+            tags$ul(
+              tags$li("Your instructor has received your answers"),
+              tags$li("Your submission was recorded at: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S")),
+              tags$li("Module completed: ", tutorial_id)
+            ),
+            br(),
+            p(class = "text-muted", style = "font-size: 0.9em;",
+              "Backup reference code: ", substr(learnrhash_submission, 1, 8), "...")
+        )
       })
+      # Keep button disabled after successful submission
+      updateActionButton(session, "submit", label = "✅ Submitted", icon = NULL)
     } else {
-      output$submission_status <- renderText({
-        paste("Submission may have failed. Please save this hash and contact your instructor:", 
-              learnrhash_submission)
+      output$submission_status <- renderUI({
+        div(class = "alert alert-danger", style = "margin-top: 15px;",
+            icon("exclamation-circle"), " ",
+            h4(strong("⚠️ Submission Issue")),
+            p("There may have been a problem submitting your quiz."),
+            p(strong("Please save this backup code and contact your instructor:")),
+            p(class = "bg-light", style = "padding: 10px; font-family: monospace; word-break: break-all;",
+              substr(learnrhash_submission, 1, 16), "...")
+        )
       })
+      # Re-enable button for retry
+      updateActionButton(session, "submit", label = "Retry Submission", icon = NULL)
     }
     
   }, error = function(e) {
     # Fallback: show hash to student
     state <- learnr::get_tutorial_state()
     fallback_hash <- digest::digest(state, algo = "sha256")
-    
-    output$submission_status <- renderText({
-      paste("Error submitting quiz. Please save this hash and contact your instructor:", 
-            fallback_hash)
+
+    output$submission_status <- renderUI({
+      div(class = "alert alert-danger", style = "margin-top: 15px;",
+          icon("exclamation-circle"), " ",
+          h4(strong("⚠️ Technical Error")),
+          p("There was a technical problem submitting your quiz."),
+          p(strong("Please save this backup code and contact your instructor:")),
+          p(class = "bg-light", style = "padding: 10px; font-family: monospace; word-break: break-all;",
+            substr(fallback_hash, 1, 16), "...")
+      )
     })
+    # Re-enable button for retry
+    updateActionButton(session, "submit", label = "Retry Submission", icon = NULL)
   })
 })
 ```
