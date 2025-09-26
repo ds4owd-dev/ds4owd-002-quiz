@@ -167,3 +167,5 @@ observeEvent(input$submit, {
   }
 })
 ```
+
+[Click to access the Live Quiz Checker](https://script.google.com/a/macros/ethz.ch/s/AKfycbzz8OfGDNwSOBJzrMOpIM_RYNa8WPwGAtZ9N93WaA3DxaQeaG8qJMaZuBKQWEZcgxqC/exec)
