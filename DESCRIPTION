@@ -34,6 +34,7 @@ Imports:
     rnaturalearth,
     rnaturalearthdata,
     sf
+    forcats
 Suggests:
     pkgdown
 Remotes:
