@@ -1,0 +1,321 @@
+---
+title: "Module 4: Factors and Data Import"
+output: learnr::tutorial
+runtime: shiny_prerendered
+description: "Test your understanding of factors and data import concepts covered in Module 4"
+resource_files:
+  - github_usernames.csv
+  - _github_username.Rmd
+  - _participation.Rmd
+  - _submission.Rmd
+tutorial:
+  id: "md-04-quiz"
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(knitr)
+library(gradethis)
+library(learnrhash)
+library(forcats)
+
+# Enable exercise checking
+tutorial_options(
+  exercise.eval = FALSE,
+  exercise.checker = gradethis::grade_learnr
+)
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+# Load sanitation data for exercises
+sanitation <- read_csv("data/jmp_wld_sanitation_long.csv", show_col_types = FALSE)
+
+# Create factor levels for exercises
+levels_varname_long <- c(
+  "no sanitation facilities",
+  "unimproved sanitation facilities",
+  "limited sanitation services",
+  "basic sanitation services",
+  "safely managed sanitation services"
+)
+
+# Create sample data for import exercises
+write_csv(
+  tibble::tibble(
+    country = c("Kenya", "Uganda", "Tanzania"),
+    population = c(54000000, 47000000, 62000000),
+    year = c(2020, 2020, 2020)
+  ),
+  "data/sample_data.csv"
+)
+```
+
+## Introduction
+
+This weekly quiz is designed to support your learning in the ds4owd course. It will test your understanding of the concepts covered in Module 4, including working with factors and importing data in different formats.
+
+## Multiple Choice Questions
+
+### Question 1: Factor Ordering
+
+```{r q1}
+question_radio(
+  "Why is it important to specify the order of levels when converting a character variable to a factor?",
+  answer("To make the factor take up less memory in R"),
+  answer("To control the order in which categories appear in plots and tables", correct = TRUE),
+  answer("To make the factor easier to filter"),
+  answer("To convert the factor back to a character variable"),
+  incorrect = "Think about how factors affect the visual presentation of your data in plots.",
+  correct = "Correct! Specifying factor order controls how categories appear in visualizations and tables, which is especially important for ordinal categories like sanitation service levels.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 2: RDS vs CSV
+
+```{r q2}
+question_radio(
+  "What is a key advantage of using the .rds format instead of .csv for storing R data?",
+  answer(".rds files are smaller and faster to read/write"),
+  answer(".rds files can be opened in Excel"),
+  answer(".rds files preserve R-specific data structures like factors", correct = TRUE),
+  answer(".rds files are compatible with all programming languages"),
+  incorrect = "Consider what happens to data types when you save and reload data in different formats.",
+  correct = "Correct! The .rds format preserves R-specific data structures including factors with their levels, while .csv converts everything to plain text and loses this information.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 3: Reading Data Functions
+
+```{r q3}
+question_radio(
+  "Which readr function should you use to import a CSV file into R?",
+  answer("read.csv()"),
+  answer("read_csv()", correct = TRUE),
+  answer("import_csv()"),
+  answer("load_csv()"),
+  incorrect = "The readr package uses underscores in function names instead of dots.",
+  correct = "Correct! The read_csv() function from the readr package is the recommended way to import CSV files in the tidyverse.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+## Coding Exercises
+
+### Question 4: Create a Factor in a Dataframe
+
+Create a factor from a character column in a dataframe with a specified order.
+
+Complete the code to convert the `service_level` column to a factor with the correct order (from lowest to highest service level):
+
+```{r q4-setup}
+# Create a sample dataframe
+service_data <- tibble::tibble(
+  country = c("Kenya", "Uganda", "Tanzania", "Rwanda", "Burundi"),
+  service_level = c("basic", "no facilities", "safely managed", "limited", "unimproved")
+)
+```
+
+```{r q4-exercise, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q4-setup"}
+# Define the correct order
+level_order <- c("no facilities", "unimproved", "limited", "basic", "safely managed")
+
+# Convert service_level to factor with specified order
+service_data_factor <- service_data |>
+  mutate(service_level = factor(____, levels = ____))
+
+# Display the result
+service_data_factor
+```
+
+```{r q4-solution, include=FALSE}
+level_order <- c("no facilities", "unimproved", "limited", "basic", "safely managed")
+
+service_data_factor <- service_data |>
+  mutate(service_level = factor(service_level, levels = level_order))
+
+service_data_factor
+```
+
+### Question 5: Import CSV Data
+
+Use the read_csv() function to import data from a CSV file.
+
+Complete the code to import the sample_data.csv file:
+
+```{r q5-exercise, exercise=TRUE, exercise.eval=FALSE}
+# Import the CSV file
+sample_data <- ____("data/sample_data.csv")
+
+# Display the data
+sample_data
+```
+
+```{r q5-solution, include=FALSE}
+sample_data <- read_csv("data/sample_data.csv")
+
+sample_data
+```
+
+### Question 6: Convert Multiple Columns to Factors
+
+Use mutate() to convert character columns to factors with specified levels.
+
+Complete the code to convert the `varname_long` and `residence` columns to factors:
+
+```{r q6-setup}
+sanitation_sample <- sanitation |>
+  filter(iso3 == "KEN", year == 2020) |>
+  select(name, residence, varname_long, percent)
+```
+
+```{r q6-exercise, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q6-setup"}
+# Define factor levels
+levels_varname_long <- c(
+  "no sanitation facilities",
+  "unimproved sanitation facilities",
+  "limited sanitation services",
+  "basic sanitation services",
+  "safely managed sanitation services"
+)
+
+levels_residence <- c("national", "rural", "urban")
+
+# Convert to factors
+sanitation_factors <- sanitation_sample |>
+  mutate(
+    varname_long = factor(____, levels = ____),
+    residence = factor(____, levels = ____)
+  )
+
+# Display the result
+glimpse(sanitation_factors)
+```
+
+```{r q6-solution, include=FALSE}
+levels_varname_long <- c(
+  "no sanitation facilities",
+  "unimproved sanitation facilities",
+  "limited sanitation services",
+  "basic sanitation services",
+  "safely managed sanitation services"
+)
+
+levels_residence <- c("national", "rural", "urban")
+
+sanitation_factors <- sanitation_sample |>
+  mutate(
+    varname_long = factor(varname_long, levels = levels_varname_long),
+    residence = factor(residence, levels = levels_residence)
+  )
+
+glimpse(sanitation_factors)
+```
+
+### Question 7: Verify Factor Order with arrange()
+
+Use arrange() to verify that factors are ordered correctly in a dataframe.
+
+Complete the code to arrange the data by `varname_long` (which is a factor) to see if the levels are in the correct order:
+
+```{r q7-setup}
+sanitation_sample <- sanitation |>
+  filter(iso3 == "KEN", year == 2020, residence == "national") |>
+  mutate(
+    varname_long = factor(
+      varname_long,
+      levels = c(
+        "no sanitation facilities",
+        "unimproved sanitation facilities",
+        "limited sanitation services",
+        "basic sanitation services",
+        "safely managed sanitation services"
+      )
+    )
+  ) |>
+  select(name, varname_long, percent)
+```
+
+```{r q7-exercise, exercise=TRUE, exercise.eval=FALSE, exercise.setup="q7-setup"}
+# Arrange by the factor varname_long to verify the order
+sanitation_sample |>
+  arrange(____)
+```
+
+```{r q7-solution, include=FALSE}
+sanitation_sample |>
+  arrange(varname_long)
+```
+
+### Question 8: Filter and Create Ordered Factor
+
+Combine filtering with factor creation to prepare data for visualization.
+
+Complete the code to filter Uganda data for years 2000 and 2020, and convert `varname_long` to a factor:
+
+```{r q8-exercise, exercise=TRUE, exercise.eval=FALSE}
+# Define factor levels
+levels_varname_long <- c(
+  "no sanitation facilities",
+  "unimproved sanitation facilities",
+  "limited sanitation services",
+  "basic sanitation services"
+)
+
+# Filter and convert to factor
+sanitation_uga <- sanitation |>
+  filter(
+    iso3 == "____",
+    year %in% c(____, ____),
+    varname_short != "san_sm"
+  ) |>
+  mutate(
+    varname_long = factor(____, levels = ____)
+  )
+
+# Check the result
+head(sanitation_uga)
+```
+
+```{r q8-solution, include=FALSE}
+levels_varname_long <- c(
+  "no sanitation facilities",
+  "unimproved sanitation facilities",
+  "limited sanitation services",
+  "basic sanitation services"
+)
+
+sanitation_uga <- sanitation |>
+  filter(
+    iso3 == "UGA",
+    year %in% c(2000, 2020),
+    varname_short != "san_sm"
+  ) |>
+  mutate(
+    varname_long = factor(varname_long, levels = levels_varname_long)
+  )
+
+head(sanitation_uga)
+```
+
+## Details
+
+**Important**: Please enter your GitHub username below and click "Submit Quiz" at the end to record your completion.
+
+```{r child="../common/_github_username.Rmd"}
+```
+
+## Submission
+
+```{r child="../common/_participation.Rmd"}
+```
+
+```{r child="../common/_submission.Rmd"}
+```
