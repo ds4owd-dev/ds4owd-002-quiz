@@ -268,8 +268,6 @@ sanitation |>
 ```{r child="_github_username.Rmd"}
 ```
 
-## Submission
-
 ```{r child="_participation.Rmd"}
 ```
 
