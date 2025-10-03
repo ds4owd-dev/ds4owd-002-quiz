@@ -308,13 +308,11 @@ head(sanitation_uga)
 
 **Important**: Please enter your GitHub username below and click "Submit Quiz" at the end to record your completion.
 
-```{r child="../common/_github_username.Rmd"}
+```{r child="_github_username.Rmd"}
 ```
 
-## Submission
-
-```{r child="../common/_participation.Rmd"}
+```{r child="_participation.Rmd"}
 ```
 
-```{r child="../common/_submission.Rmd"}
+```{r child="_submission.Rmd"}
 ```
