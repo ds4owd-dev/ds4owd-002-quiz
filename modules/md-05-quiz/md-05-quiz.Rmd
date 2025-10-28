@@ -1,0 +1,261 @@
+---
+title: "Module 5: Conditional Statements, Dates, and Tables"
+output: learnr::tutorial
+runtime: shiny_prerendered
+description: "Test your understanding of conditional statements, file naming, and cross-referencing covered in Module 5"
+resource_files:
+  - ../common/github_usernames.csv
+  - ../common/_github_username.Rmd
+  - ../common/_participation.Rmd
+  - ../common/_submission.Rmd
+tutorial:
+  id: "md-05-quiz"
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(dplyr)
+library(palmerpenguins)
+library(knitr)
+library(gradethis)
+library(learnrhash)
+library(httr)
+
+# Enable exercise checking
+tutorial_options(
+  exercise.eval = FALSE,
+  exercise.checker = gradethis::grade_learnr
+)
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+# Prepare penguins data
+data(penguins, package = "palmerpenguins")
+```
+
+## Introduction
+
+This weekly quiz is designed to support your learning in the ds4owd course. It will test your understanding of the concepts covered in Module 5, including conditional statements with `case_when()`, file naming conventions, and cross-referencing tables in Quarto documents. A submission of the quiz for each module is required to complete the course.
+
+## Multiple Choice Questions
+
+### Question 1: File Naming Conventions
+
+```{r q1}
+question_checkbox(
+  "Which of the following are good practices for naming variables in R? (Select all that apply)",
+  answer("Use snake_case for consistency", correct = TRUE),
+  answer("Include spaces to make names more readable"),
+  answer("Avoid special characters", correct = TRUE),
+  answer("Use descriptive but concise names", correct = TRUE),
+  answer("Use special characters like () to add information"),
+  incorrect = "Good file naming conventions avoid spaces and special characters, and use consistent naming like snake_case.",
+  correct = "Correct! Following these naming conventions makes your code more readable and prevents errors.",
+  allow_retry = TRUE
+)
+```
+
+### Question 2: Variable Naming Examples
+
+```{r q2}
+question_radio(
+  "Which of the following variable names follows best practices for R?",
+  answer("Total Solids (g/L)"),
+  answer("ts", correct = TRUE),
+  answer("Number of users"),
+  answer("System (pit latrine / septic tank)"),
+  incorrect = "Variable names should avoid spaces, special characters, and be concise. Descriptions belong in a data dictionary.",
+  correct = "Correct! 'ts' is a concise variable name without spaces or special characters. The full description ('Total solids in g/L') would go in a data dictionary.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 3: Table Cross-Referencing
+
+```{r q3}
+question_radio(
+  "What are the required components to create a cross-referenceable table in a Quarto document?",
+  answer("Only a label starting with tbl-"),
+  answer("Only a caption with tbl-cap:"),
+  answer("Both a label starting with tbl- and a caption", correct = TRUE),
+  answer("A label starting with fig- and a caption"),
+  incorrect = "Cross-referencing tables requires both a label (starting with tbl-) and a caption in your code chunk options.",
+  correct = "Correct! You need both a label (e.g., #| label: tbl-penguins) and a caption (e.g., #| tbl-cap: A few penguins) to make a table cross-referenceable.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 4: Referencing Tables in Text
+
+```{r q4}
+question_radio(
+  "If you created a table with the label 'tbl-summary', how would you reference it in your text?",
+  answer("@fig-summary"),
+  answer("@tbl-summary", correct = TRUE),
+  answer("#tbl-summary"),
+  answer("[tbl-summary]"),
+  incorrect = "To reference a table in text, use @ followed by the label name.",
+  correct = "Correct! Use @tbl-summary to create a cross-reference to your table. Quarto will automatically create a numbered reference and hyperlink.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+## Coding Exercises
+
+### Exercise 1: Categorize Penguin Body Mass
+
+Use `mutate()` and `case_when()` to create a new variable `body_mass_category` that categorizes penguins by their body mass:
+
+- Penguins with body mass less than 3500g are "small"
+- Penguins with body mass between 3500g and 4500g (inclusive) are "medium"
+- Penguins with body mass greater than 4500g are "large"
+
+```{r ex1-setup}
+data(penguins, package = "palmerpenguins")
+```
+
+```{r ex1, exercise=TRUE, exercise.setup="ex1-setup"}
+penguins |>
+  mutate(body_mass_category = case_when(
+    _______________________________
+  ))
+```
+
+```{r ex1-solution, include=FALSE}
+penguins |>
+  mutate(body_mass_category = case_when(
+    body_mass_g < 3500 ~ "small",
+    body_mass_g >= 3500 & body_mass_g <= 4500 ~ "medium",
+    body_mass_g > 4500 ~ "large"
+  ))
+```
+
+```{r ex1-check}
+grade_this_code(
+  correct = "Excellent! You've successfully categorized penguins by body mass using case_when().",
+  incorrect = "Not quite. {code_feedback()} Remember to check for body_mass_g < 3500, between 3500 and 4500, and > 4500."
+)
+```
+
+### Exercise 2: Create Island Labels
+
+The penguins dataset contains abbreviated island names. Use `case_when()` to create a new variable `island_full` with full island names:
+
+- "Torgersen" should become "Torgersen Island"
+- "Biscoe" should become "Biscoe Island"
+- "Dream" should become "Dream Island"
+
+```{r ex2-setup}
+data(penguins, package = "palmerpenguins")
+```
+
+```{r ex2, exercise=TRUE, exercise.setup="ex2-setup"}
+penguins |>
+  mutate(island_full = case_when(
+    _______________________________
+  ))
+```
+
+```{r ex2-solution, include=FALSE}
+penguins |>
+  mutate(island_full = case_when(
+    island == "Torgersen" ~ "Torgersen Island",
+    island == "Biscoe" ~ "Biscoe Island",
+    island == "Dream" ~ "Dream Island"
+  ))
+```
+
+```{r ex2-check}
+grade_this_code(
+  correct = "Perfect! You've successfully created full island names using case_when().",
+  incorrect = "Not quite. {code_feedback()} You need to match each island name and append ' Island' to it."
+)
+```
+
+### Exercise 3: Categorize Bill Length by Species
+
+Use `case_when()` to create a new variable `bill_category` that classifies bill length differently for each species:
+
+- For Adelie penguins: bills < 38mm are "short", otherwise "long"
+- For Chinstrap penguins: bills < 48mm are "short", otherwise "long"
+- For Gentoo penguins: bills < 47mm are "short", otherwise "long"
+
+```{r ex3-setup}
+data(penguins, package = "palmerpenguins")
+```
+
+```{r ex3, exercise=TRUE, exercise.setup="ex3-setup"}
+penguins |>
+  mutate(bill_category = case_when(
+    _______________________________
+  ))
+```
+
+```{r ex3-solution, include=FALSE}
+penguins |>
+  mutate(bill_category = case_when(
+    species == "Adelie" & bill_length_mm < 38 ~ "short",
+    species == "Adelie" & bill_length_mm >= 38 ~ "long",
+    species == "Chinstrap" & bill_length_mm < 48 ~ "short",
+    species == "Chinstrap" & bill_length_mm >= 48 ~ "long",
+    species == "Gentoo" & bill_length_mm < 47 ~ "short",
+    species == "Gentoo" & bill_length_mm >= 47 ~ "long"
+  ))
+```
+
+```{r ex3-check}
+grade_this_code(
+  correct = "Excellent work! You've successfully applied different conditions for each species.",
+  incorrect = "Not quite. {code_feedback()} Remember to check both species AND bill_length_mm for each condition."
+)
+```
+
+### Exercise 4: Fix Data Entry Error
+
+A data entry error occurred for penguin observations from Dream island in 2007. All Adelie penguins from Dream island in 2007 had their flipper length recorded incorrectly - it's 10mm too short. Use `case_when()` to add 10mm to the flipper length only for these specific observations, keeping all other values unchanged.
+
+Hint: Use `.default = flipper_length_mm` to keep unchanged values.
+
+```{r ex4-setup}
+data(penguins, package = "palmerpenguins")
+```
+
+```{r ex4, exercise=TRUE, exercise.setup="ex4-setup"}
+penguins |>
+  mutate(flipper_length_mm = case_when(
+    _______________________________
+  ))
+```
+
+```{r ex4-solution, include=FALSE}
+penguins |>
+  mutate(flipper_length_mm = case_when(
+    species == "Adelie" & island == "Dream" & year == 2007 ~ flipper_length_mm + 10,
+    .default = flipper_length_mm
+  ))
+```
+
+```{r ex4-check}
+grade_this_code(
+  correct = "Perfect! You've successfully corrected the data entry error using multiple conditions.",
+  incorrect = "Not quite. {code_feedback()} You need to check for species == 'Adelie', island == 'Dream', AND year == 2007, then add 10 to flipper_length_mm. Don't forget .default to keep other values unchanged."
+)
+```
+
+## Details
+
+**Important**: Please enter your GitHub username below and click "Submit Quiz" at the end to record your completion.
+
+```{r child="../common/_github_username.Rmd"}
+```
+
+```{r child="../common/_participation.Rmd"}
+```
+
+```{r child="../common/_submission.Rmd"}
+```
+
+You've completed the Module 5 quiz!

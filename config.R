@@ -6,7 +6,8 @@ quiz_names <- c(
   "md-01-quiz",
   "md-02-quiz",
   "md-03-quiz",
-  "md-04-quiz"
+  "md-04-quiz",
+  "md-05-quiz"
   # Add new quizzes here:
 )
 
