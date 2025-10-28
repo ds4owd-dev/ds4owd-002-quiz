@@ -53,6 +53,7 @@ Replace `your-account-name`, `YOUR-TOKEN-HERE`, and `YOUR-SECRET-HERE` with your
 The quizzes now include automatic submission to Google Forms for tracking student progress:
 
 ### Features
+
 - **GitHub username collection**: Students enter their GitHub username at the start
 - **Learnrhash generation**: Quiz responses are encoded using learnrhash
 - **Automatic submission**: Results are submitted to Google Form via POST request
@@ -65,6 +66,7 @@ To connect quizzes to your own Google Form, update the configuration in `modules
 #### 0. Google Form Structure
 
 Your Google Form should have exactly 3 questions:
+
 1. **Tutorial/Module ID** (text field)
 2. **GitHub username** (text field)
 3. **Learnrhash** (long text field for quiz results)
@@ -95,6 +97,7 @@ learnrhash_entry_id <- "entry.YOUR-LEARNRHASH-ID"      # For quiz results
 ```
 
 #### Example Current Setup
+
 - **Form URL**: https://docs.google.com/forms/d/e/1FAIpQLScnw9R8wMU5SfFqNVXGeEkiIygLTB_Dc6jWBmbwEeHuekBDzg/formResponse
 - **Entry IDs**: 
   - `entry.1169139257` - Module name (1st question)
@@ -133,6 +136,7 @@ Quizzes are automatically deployed to shinyapps.io via GitHub Actions when chang
 #### How the CI/CD Workflow Works
 
 The GitHub Action (`.github/workflows/deploy-quiz.yml`):
+s
 - **Triggers**: On pushes to `main`/`dev` branches or manual workflow dispatch
 - **Environment**: Sets up R 4.3.2 with required packages from DESCRIPTION
 - **Authentication**: Uses repository secrets to authenticate with shinyapps.io
