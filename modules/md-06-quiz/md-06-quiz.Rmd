@@ -30,8 +30,6 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 # Sample data for exercises
 countries <- c("Uganda", "Switzerland", "Peru", "Kenya", "Norway")
 populations <- c(45.7, 8.6, 33.0, 53.8, 5.4)
-regions <- c("Sub-Saharan Africa", "Europe", "Latin America",
-             "Sub-Saharan Africa", "Europe")
 ```
 
 ## Introduction
@@ -101,6 +99,22 @@ question_checkbox(
   incorrect = "Good practices include using descriptive directory structures (/data, /src, /results), meaningful file names (not sequential numbers), and version control (not email).",
   correct = "Correct! Organizing data in /data, code in /src, and maintaining a CHANGELOG are all good practices. Avoid sequential numbering and prefer version control over email.",
   allow_retry = TRUE
+)
+```
+
+### Question 5: Good Enough Practices - Software Development
+
+```{r q5}
+question_radio(
+  "According to 'Good Enough Practices in Scientific Computing', what should you do when you find yourself copying and pasting code multiple times?",
+  answer("Continue copying and pasting to keep the code simple"),
+  answer("Create a reusable function to eliminate duplication", correct = TRUE),
+  answer("Add comments to explain each copy-pasted section"),
+  answer("Use different variable names for each copied section"),
+  incorrect = "The article emphasizes being 'ruthless about eliminating duplication' by creating reusable functions instead of copying and pasting code.",
+  correct = "Correct! When you find yourself copying and pasting code, you should create a reusable function instead. This makes your code more maintainable and reduces errors.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
 )
 ```
 
@@ -191,57 +205,15 @@ grade_this_code(
 )
 ```
 
-### Exercise 4: For-Loop to Create Summaries
-
-Write a for-loop that iterates through the unique regions and prints a summary message for each region showing the region name and the number of countries in that region.
-
-Hint: First create a vector of unique regions, then loop through it. Use `sum()` to count TRUE values.
-
-```{r ex4-setup}
-regions <- c("Sub-Saharan Africa", "Europe", "Latin America",
-             "Sub-Saharan Africa", "Europe")
-```
-
-```{r ex4, exercise=TRUE, exercise.setup="ex4-setup"}
-# Get unique regions
-unique_regions <- unique(regions)
-
-# Loop through unique regions
-for (i in seq_along(unique_regions)) {
-  region_current <- unique_regions[[i]]
-  n_countries <- ___________
-  print(paste0(region_current, ": ", n_countries, " countries"))
-}
-```
-
-```{r ex4-solution, include=FALSE}
-# Get unique regions
-unique_regions <- unique(regions)
-
-# Loop through unique regions
-for (i in seq_along(unique_regions)) {
-  region_current <- unique_regions[[i]]
-  n_countries <- sum(regions == region_current)
-  print(paste0(region_current, ": ", n_countries, " countries"))
-}
-```
-
-```{r ex4-check}
-grade_this_code(
-  correct = "Perfect! You've successfully created a for-loop that summarizes data by group.",
-  incorrect = "Not quite. {code_feedback()} Use sum(regions == region_current) to count how many times the region appears."
-)
-```
-
 ## Finding Documentation
 
-### Question 5: Quarto Cross-References Documentation
+### Question 6: Quarto Cross-References Documentation
 
 Go to quarto.org and find the official documentation page about cross-references. Copy and paste the complete URL to that page in the text box below.
 
 The URL should be the exact page that explains how to create cross-references for figures, tables, and other elements in Quarto documents.
 
-```{r q5}
+```{r q6}
 question_text(
   "What is the URL for the Quarto cross-references documentation page?",
   answer("https://quarto.org/docs/authoring/cross-references.html", correct = TRUE),
