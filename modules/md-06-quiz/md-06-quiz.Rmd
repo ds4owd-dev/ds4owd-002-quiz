@@ -1,0 +1,270 @@
+---
+title: "Module 6: Programming with R and Good Practices"
+output: learnr::tutorial
+runtime: shiny_prerendered
+description: "Test your understanding of vector types, for-loops, and good practices in scientific computing covered in Module 6"
+resource_files:
+  - ../common/github_usernames.csv
+  - ../common/_github_username.Rmd
+  - ../common/_participation.Rmd
+  - ../common/_submission.Rmd
+tutorial:
+  id: "md-06-quiz"
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(dplyr)
+library(gradethis)
+library(learnrhash)
+library(httr)
+
+# Enable exercise checking
+tutorial_options(
+  exercise.eval = FALSE,
+  exercise.checker = gradethis::grade_learnr
+)
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+# Sample data for exercises
+countries <- c("Uganda", "Switzerland", "Peru", "Kenya", "Norway")
+populations <- c(45.7, 8.6, 33.0, 53.8, 5.4)
+regions <- c("Sub-Saharan Africa", "Europe", "Latin America",
+             "Sub-Saharan Africa", "Europe")
+```
+
+## Introduction
+
+This weekly quiz is designed to support your learning in the ds4owd course. It will test your understanding of the concepts covered in Module 6, including vector types in R, for-loops for iteration, and good enough practices in scientific computing. A submission of the quiz for each module is required to complete the course.
+
+## Multiple Choice Questions
+
+### Question 1: Vector Types
+
+```{r q1}
+question_radio(
+  "What is the output of typeof(c(TRUE, FALSE, TRUE))?",
+  answer("logical", correct = TRUE),
+  answer("integer"),
+  answer("double"),
+  answer("character"),
+  incorrect = "Remember that TRUE and FALSE are logical values in R.",
+  correct = "Correct! c(TRUE, FALSE, TRUE) creates a logical vector, so typeof() returns 'logical'.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 2: When to Use For-Loops
+
+```{r q2}
+question_checkbox(
+  "When should you use a for-loop in R? (Select all that apply)",
+  answer("When you need to create multiple separate plots", correct = TRUE),
+  answer("When you want to add a new column to a dataframe using mutate()"),
+  answer("When you need to save multiple separate files", correct = TRUE),
+  answer("When you want to group_by() and summarize data"),
+  answer("When you need to read multiple files and combine them", correct = TRUE),
+  incorrect = "For-loops are needed when you want multiple separate outputs. Many operations like mutate() and group_by() are vectorized and don't need loops.",
+  correct = "Correct! For-loops are useful when you need multiple separate outputs like plots, files, or when reading multiple files. Operations on a single dataframe like mutate() and group_by() don't need loops.",
+  allow_retry = TRUE
+)
+```
+
+### Question 3: Good Enough Practices - Data Management
+
+```{r q3}
+question_radio(
+  "According to 'Good Enough Practices in Scientific Computing', what is the recommended way to store raw data?",
+  answer("Store raw data separately and never modify it", correct = TRUE),
+  answer("Store raw data in the same file as processed data"),
+  answer("Modify raw data directly to fix errors"),
+  answer("Store raw data only on your local computer"),
+  incorrect = "Good practices recommend keeping raw data separate and unmodified, with all processing documented in scripts.",
+  correct = "Correct! Raw data should be stored separately and never modified. All data processing should be done through documented scripts that transform the raw data.",
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+### Question 4: Good Enough Practices - Project Organization
+
+```{r q4}
+question_checkbox(
+  "Which of the following are recommended practices for organizing a data analysis project? (Select all that apply)",
+  answer("Put raw data in a /data directory", correct = TRUE),
+  answer("Use sequential numbers for all file names (file1.R, file2.R, etc.)"),
+  answer("Put source code in a /src directory", correct = TRUE),
+  answer("Keep a CHANGELOG file documenting changes", correct = TRUE),
+  answer("Email scripts back and forth between collaborators"),
+  incorrect = "Good practices include using descriptive directory structures (/data, /src, /results), meaningful file names (not sequential numbers), and version control (not email).",
+  correct = "Correct! Organizing data in /data, code in /src, and maintaining a CHANGELOG are all good practices. Avoid sequential numbering and prefer version control over email.",
+  allow_retry = TRUE
+)
+```
+
+## Coding Exercises
+
+### Exercise 1: Working with Vector Types
+
+Create a character vector called `cities` containing the city names "Kampala", "Bern", and "Lima". Then use `typeof()` to check its type.
+
+```{r ex1, exercise=TRUE}
+# Create the cities vector
+cities <- ___________
+
+# Check its type
+typeof(_______)
+```
+
+```{r ex1-solution, include=FALSE}
+# Create the cities vector
+cities <- c("Kampala", "Bern", "Lima")
+
+# Check its type
+typeof(cities)
+```
+
+```{r ex1-check}
+grade_this_code(
+  correct = "Excellent! You've successfully created a character vector and checked its type.",
+  incorrect = "Not quite. {code_feedback()} Remember to use c() to create a vector with multiple elements."
+)
+```
+
+### Exercise 2: Logical Vectors
+
+The `populations` vector contains population values in millions. Create a logical vector called `large_population` that is TRUE for countries with populations greater than 30 million.
+
+```{r ex2-setup}
+populations <- c(45.7, 8.6, 33.0, 53.8, 5.4)
+```
+
+```{r ex2, exercise=TRUE, exercise.setup="ex2-setup"}
+# Create logical vector
+large_population <- ___________
+
+large_population
+```
+
+```{r ex2-solution, include=FALSE}
+# Create logical vector
+large_population <- populations > 30
+
+large_population
+```
+
+```{r ex2-check}
+grade_this_code(
+  correct = "Perfect! You've created a logical vector using a comparison operator.",
+  incorrect = "Not quite. {code_feedback()} Use the > operator to compare populations with 30."
+)
+```
+
+### Exercise 3: For-Loop with seq_along()
+
+Write a for-loop that prints each country name from the `countries` vector along with its index number. Use `seq_along()` to create the sequence of indices.
+
+Expected output format: "1: Uganda", "2: Switzerland", etc.
+
+```{r ex3-setup}
+countries <- c("Uganda", "Switzerland", "Peru", "Kenya", "Norway")
+```
+
+```{r ex3, exercise=TRUE, exercise.setup="ex3-setup"}
+for (i in ___________) {
+  print(paste0(___________))
+}
+```
+
+```{r ex3-solution, include=FALSE}
+for (i in seq_along(countries)) {
+  print(paste0(i, ": ", countries[[i]]))
+}
+```
+
+```{r ex3-check}
+grade_this_code(
+  correct = "Excellent work! You've successfully used seq_along() in a for-loop to iterate with indices.",
+  incorrect = "Not quite. {code_feedback()} Use seq_along(countries) to create the sequence and countries[[i]] to access each element."
+)
+```
+
+### Exercise 4: For-Loop to Create Summaries
+
+Write a for-loop that iterates through the unique regions and prints a summary message for each region showing the region name and the number of countries in that region.
+
+Hint: First create a vector of unique regions, then loop through it. Use `sum()` to count TRUE values.
+
+```{r ex4-setup}
+regions <- c("Sub-Saharan Africa", "Europe", "Latin America",
+             "Sub-Saharan Africa", "Europe")
+```
+
+```{r ex4, exercise=TRUE, exercise.setup="ex4-setup"}
+# Get unique regions
+unique_regions <- unique(regions)
+
+# Loop through unique regions
+for (i in seq_along(unique_regions)) {
+  region_current <- unique_regions[[i]]
+  n_countries <- ___________
+  print(paste0(region_current, ": ", n_countries, " countries"))
+}
+```
+
+```{r ex4-solution, include=FALSE}
+# Get unique regions
+unique_regions <- unique(regions)
+
+# Loop through unique regions
+for (i in seq_along(unique_regions)) {
+  region_current <- unique_regions[[i]]
+  n_countries <- sum(regions == region_current)
+  print(paste0(region_current, ": ", n_countries, " countries"))
+}
+```
+
+```{r ex4-check}
+grade_this_code(
+  correct = "Perfect! You've successfully created a for-loop that summarizes data by group.",
+  incorrect = "Not quite. {code_feedback()} Use sum(regions == region_current) to count how many times the region appears."
+)
+```
+
+## Finding Documentation
+
+### Question 5: Quarto Cross-References Documentation
+
+Go to quarto.org and find the official documentation page about cross-references. Copy and paste the complete URL to that page in the text box below.
+
+The URL should be the exact page that explains how to create cross-references for figures, tables, and other elements in Quarto documents.
+
+```{r q5}
+question_text(
+  "What is the URL for the Quarto cross-references documentation page?",
+  answer("https://quarto.org/docs/authoring/cross-references.html", correct = TRUE),
+  answer("http://quarto.org/docs/authoring/cross-references.html", correct = TRUE),
+  answer("quarto.org/docs/authoring/cross-references.html", correct = TRUE),
+  answer("www.quarto.org/docs/authoring/cross-references.html", correct = TRUE),
+  answer("https://www.quarto.org/docs/authoring/cross-references.html", correct = TRUE),
+  incorrect = "Not quite. Make sure you're on the official Quarto documentation site and find the page specifically about cross-references in the authoring section.",
+  correct = "Correct! You found the right documentation page. This page explains how to create cross-references for figures, tables, equations, and more.",
+  allow_retry = TRUE,
+  trim = TRUE
+)
+```
+
+## Details
+
+**Important**: Please enter your GitHub username below and click "Submit Quiz" at the end to record your completion.
+
+```{r child="_github_username.Rmd"}
+```
+
+```{r child="_participation.Rmd"}
+```
+
+```{r child="_submission.Rmd"}
+```
